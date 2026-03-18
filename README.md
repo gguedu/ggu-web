@@ -1,1 +1,1 @@
-ggu.edu.kg
+官网ggu.edu.kg
