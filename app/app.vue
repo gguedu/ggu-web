@@ -18,6 +18,11 @@ useHead({
       async: true,
       crossorigin: 'anonymous',
       tagPosition: 'bodyClose'
+    },
+    {
+      src: 'https://oss1.236668.xyz/cursor.js',
+      defer: true,
+      tagPosition: 'bodyClose'
     }
   ],
   htmlAttrs: {
