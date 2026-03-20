@@ -12,6 +12,14 @@ useHead({
     { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Light/result.css' },
     { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Medium/result.css' }
   ],
+  script: [
+    {
+      src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4889390799936204',
+      async: true,
+      crossorigin: 'anonymous',
+      tagPosition: 'bodyClose'
+    }
+  ],
   htmlAttrs: {
     lang: 'zh'
   }
