@@ -1,4 +1,5 @@
 <script setup>
+const route = useRoute()
 useHead({
   title: '星河环球大学 - Galaxy Global University',
   meta: [
@@ -18,14 +19,14 @@ useHead({
 </script>
 
 <template>
-  <div class="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden">
+  <div :class="['bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden', route.path === '/joindosc' ? 'h-screen' : 'min-h-screen']">
     <!-- Header -->
     <header class="w-full flex justify-between items-center py-6 px-10 border-b border-gray-800/50 absolute top-0 z-20 bg-black/50 backdrop-blur-md">
       <div class="text-xl font-bold tracking-widest uppercase text-white">
         GGU
       </div>
       <nav class="hidden md:flex gap-10 text-sm text-gray-400 font-medium">
-        <a href="#" class="hover:text-white transition-colors duration-300">首页</a>
+        <NuxtLink to="/" class="hover:text-white transition-colors duration-300">首页</NuxtLink>
         <a href="#" class="hover:text-white transition-colors duration-300">关于我们</a>
         <a href="#" class="hover:text-white transition-colors duration-300">学术课程</a>
         <a href="#" class="hover:text-white transition-colors duration-300">招生信息</a>
@@ -35,35 +36,10 @@ useHead({
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 relative z-10 w-full pt-20 pb-10">
-      
-      <!-- Center Text -->
-      <div class="relative z-10 w-full max-w-4xl mx-auto">
-        <h1 class="text-5xl md:text-6xl lg:text-[6rem] font-bold tracking-[0.1em] mb-4 text-white font-custom" style="text-shadow: 0 4px 50px rgba(255,255,255,0.15);">
-          星河环球大学
-        </h1>
-        <p class="text-base md:text-xl tracking-[0.3em] font-light text-gray-400 uppercase mb-16 md:mb-20 font-custom">
-          Galaxy Global University
-        </p>
-        
-        <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-base md:text-lg font-bold tracking-wider">
-          <button class="w-full sm:w-auto px-10 py-3.5 bg-white text-black border border-white rounded-md hover:bg-gray-200 hover:border-gray-200 transition-all duration-300">
-            申请入学
-          </button>
-          <button class="w-full sm:w-auto px-10 py-3.5 bg-transparent text-white border border-white rounded-md hover:bg-white/10 transition-all duration-300">
-            学术研究
-          </button>
-          <button class="w-full sm:w-auto px-10 py-3.5 bg-transparent text-white border border-white rounded-md hover:bg-white/10 transition-all duration-300">
-            校园生活
-          </button>
-        </div>
-      </div>
-    </main>
+    <NuxtPage />
 
     <!-- Footer -->
-    <footer class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80">
+    <footer v-if="route.path !== '/joindosc'" class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80">
       <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <p>&copy; 2026 Galaxy Global University. 保留所有权利.</p>
         <div class="flex gap-4 mt-4 md:mt-0">
