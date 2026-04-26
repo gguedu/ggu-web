@@ -16,16 +16,25 @@ const suffix = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 
-const toFlag = (value: unknown, defaultValue = true) => {
+const allowRegister = computed(() => {
+  const value = config.value.register
   if (value === undefined || value === null) {
-    return defaultValue
+    return true
   }
-  return Number(value) === 1
-}
+  return Number(value) === 0
+})
 
-const allowRegister = computed(() => toFlag(config.value.register, true))
-const showLoginDomain = computed(() => toFlag(config.value.loginDomain, true))
-const requireInviteCode = computed(() => toFlag(config.value.regKey, false))
+const showLoginDomain = computed(() => {
+  const value = config.value.loginDomain
+  if (value === undefined || value === null) {
+    return true
+  }
+  return Number(value) === 0
+})
+
+const regKeyMode = computed(() => Number(config.value.regKey ?? 1))
+const requireInviteCode = computed(() => regKeyMode.value === 0)
+const optionalInviteCode = computed(() => regKeyMode.value === 2)
 
 const fullEmail = computed(() => {
   const prefix = emailPrefix.value.trim()
@@ -191,12 +200,12 @@ watch(allowRegister, (enabled) => {
             />
           </div>
 
-          <div v-if="mode === 'register' && requireInviteCode">
+          <div v-if="mode === 'register' && (requireInviteCode || optionalInviteCode)">
             <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邀请码</label>
             <input
               v-model="inviteCode"
               type="text"
-              placeholder="请输入邀请码"
+              :placeholder="requireInviteCode ? '请输入邀请码' : '邀请码（可选）'"
               class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
             />
           </div>

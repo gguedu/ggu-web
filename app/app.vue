@@ -1,7 +1,6 @@
 <script setup>
 const route = useRoute()
 const isJoinDoscRoute = computed(() => route.path === '/joindosc')
-const isMailRoute = computed(() => route.path.startsWith('/mail'))
 useHead({
   title: '星河环球大学 - Galaxy Global University',
   meta: [
@@ -34,9 +33,9 @@ useHead({
 </script>
 
 <template>
-  <div :class="['bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden', (isJoinDoscRoute || isMailRoute) ? 'h-screen' : 'min-h-screen']">
+  <div :class="['bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden', isJoinDoscRoute ? 'h-screen' : 'min-h-screen']">
     <!-- Header -->
-    <header v-if="!isMailRoute" class="w-full flex justify-between items-center py-6 px-10 border-b border-gray-800/50 absolute top-0 z-20 bg-black/50 backdrop-blur-md">
+    <header class="w-full flex justify-between items-center py-6 px-10 border-b border-gray-800/50 absolute top-0 z-20 bg-black/50 backdrop-blur-md">
       <div class="text-xl font-bold tracking-widest uppercase text-white">
         GGU
       </div>
@@ -54,7 +53,7 @@ useHead({
     <NuxtPage />
 
     <!-- Footer -->
-    <footer v-if="!isJoinDoscRoute && !isMailRoute" class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80">
+    <footer v-if="!isJoinDoscRoute" class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80">
       <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <p>&copy; 2026 Galaxy Global University. 保留所有权利.</p>
         <div class="flex gap-4 mt-4 md:mt-0">
