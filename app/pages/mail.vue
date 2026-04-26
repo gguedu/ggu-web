@@ -87,12 +87,12 @@ watch(currentAccountId, (newValue) => {
 <template>
   <NuxtPage v-if="isLoginRoute" />
 
-  <div v-else class="bg-[#141414] text-white min-h-[calc(100vh-88px)] pt-[88px]">
-    <div class="flex min-h-[calc(100vh-88px)]">
+  <div v-else class="bg-[#141414] text-white h-screen overflow-hidden">
+    <div class="flex h-full">
       <div v-if="showAside" class="fixed inset-0 bg-black/50 z-40 md:hidden" @click="closeAside" />
 
       <aside
-        class="fixed md:static top-[88px] md:top-0 left-0 z-50 w-64 h-[calc(100vh-88px)] md:h-auto md:min-h-[calc(100vh-88px)] bg-[#1c1c1e] border-r border-[#333] transform transition-transform duration-300"
+        class="fixed md:static top-0 left-0 z-50 w-64 h-screen md:h-full bg-[#1c1c1e] border-r border-[#333] transform transition-transform duration-300"
         :class="showAside ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
       >
         <div class="flex items-center gap-3 px-5 py-4 border-b border-[#333]">
@@ -124,7 +124,7 @@ watch(currentAccountId, (newValue) => {
         </nav>
       </aside>
 
-      <main class="flex-1 min-w-0 bg-[#141414]">
+      <main class="flex-1 min-w-0 bg-[#141414] h-full overflow-hidden flex flex-col">
         <header class="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#333] gap-3">
           <div class="flex items-center gap-3 min-w-0">
             <button class="md:hidden p-1 rounded-md text-gray-400 hover:bg-[#2c2c2e]" @click="showAside = !showAside">
@@ -145,7 +145,9 @@ watch(currentAccountId, (newValue) => {
           </div>
         </header>
 
-        <NuxtPage />
+        <div class="flex-1 min-h-0 overflow-hidden">
+          <NuxtPage />
+        </div>
       </main>
     </div>
   </div>

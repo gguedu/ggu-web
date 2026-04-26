@@ -16,12 +16,29 @@ const suffix = ref('')
 const loading = ref(false)
 const errorMsg = ref('')
 
+const toFlag = (value: unknown, defaultValue = true) => {
+  if (value === undefined || value === null) {
+    return defaultValue
+  }
+  return Number(value) === 1
+}
+
+const allowRegister = computed(() => toFlag(config.value.register, true))
+const showLoginDomain = computed(() => toFlag(config.value.loginDomain, true))
+const requireInviteCode = computed(() => toFlag(config.value.regKey, false))
+
 const fullEmail = computed(() => {
   const prefix = emailPrefix.value.trim()
   if (!prefix) {
     return ''
   }
-  return prefix.includes('@') ? prefix : `${prefix}${suffix.value || ''}`
+  if (prefix.includes('@')) {
+    return prefix
+  }
+  if (!showLoginDomain.value) {
+    return prefix
+  }
+  return `${prefix}${suffix.value || ''}`
 })
 
 const domainList = computed(() => config.value.domainList || [])
@@ -29,7 +46,7 @@ const domainList = computed(() => config.value.domainList || [])
 const bootstrap = async () => {
   config.value = await mailService.websiteConfig()
   if (domainList.value.length > 0 && !suffix.value) {
-    suffix.value = domainList.value[0]
+    suffix.value = domainList.value[0] || ''
   }
 }
 
@@ -60,11 +77,17 @@ const submit = async () => {
       const res = await mailService.login(fullEmail.value, password.value)
       await completeSession(res.token)
     } else {
+      if (!allowRegister.value) {
+        throw new Error('当前站点未开放注册')
+      }
       if (password.value.length < 6) {
         throw new Error('密码长度至少 6 位')
       }
       if (password.value !== confirmPassword.value) {
         throw new Error('两次输入密码不一致')
+      }
+      if (requireInviteCode.value && !inviteCode.value.trim()) {
+        throw new Error('当前注册需要邀请码')
       }
       const res = await mailService.register({
         email: fullEmail.value,
@@ -87,10 +110,16 @@ onMounted(() => {
   }
   bootstrap()
 })
+
+watch(allowRegister, (enabled) => {
+  if (!enabled && mode.value === 'register') {
+    mode.value = 'login'
+  }
+})
 </script>
 
 <template>
-  <div class="min-h-screen bg-black text-white flex items-center justify-center px-6 py-10">
+  <div class="h-screen bg-black text-white flex items-center justify-center px-6 py-6 overflow-hidden">
     <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
       <section class="hidden lg:flex flex-col justify-between p-10 border-r border-gray-900/80">
         <div>
@@ -127,11 +156,11 @@ onMounted(() => {
                 v-model="emailPrefix"
                 type="text"
                 required
-                placeholder="admin"
+                :placeholder="showLoginDomain ? 'admin' : 'name@example.com'"
                 class="flex-1 bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
               />
               <select
-                v-if="domainList.length > 0"
+                v-if="showLoginDomain && domainList.length > 0"
                 v-model="suffix"
                 class="w-[150px] bg-black border border-gray-700 rounded-md px-2 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
               >
@@ -162,12 +191,12 @@ onMounted(() => {
             />
           </div>
 
-          <div v-if="mode === 'register'">
-            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邀请码（可选）</label>
+          <div v-if="mode === 'register' && requireInviteCode">
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邀请码</label>
             <input
               v-model="inviteCode"
               type="text"
-              placeholder="邀请码"
+              placeholder="请输入邀请码"
               class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
             />
           </div>
@@ -186,6 +215,7 @@ onMounted(() => {
 
           <button
             type="button"
+            v-if="allowRegister"
             class="w-full px-6 py-3 border border-gray-700 rounded-md text-sm text-gray-200 hover:bg-white/10 hover:border-white transition-all duration-300"
             @click="mode = mode === 'login' ? 'register' : 'login'"
           >
