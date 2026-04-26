@@ -7,7 +7,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      mailApiBaseUrl: process.env.NUXT_PUBLIC_MAIL_API_BASE_URL || 'http://localhost:8080' // 云端配置时填入真实后端地址
+      // 留空由运行时环境变量 NUXT_PUBLIC_MAIL_API_BASE_URL 注入
+      mailApiBaseUrl: ''
     }
   },
 

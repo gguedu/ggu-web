@@ -90,87 +90,109 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-screen flex items-center justify-center bg-[#0f1117] p-6 overflow-auto">
-    <div class="w-full max-w-md rounded-2xl bg-[#1c1c1e] border border-[#333] shadow-2xl p-8">
-      <div class="flex flex-col items-center mb-7">
-        <Icon name="lucide:mail" size="48" class="text-blue-500 mb-3" />
-        <h1 class="text-2xl font-bold text-white tracking-wide">{{ config.title || 'Cloud Mail' }}</h1>
-        <p class="text-sm text-gray-500 mt-2">{{ mode === 'login' ? '登录邮箱系统' : '注册邮箱账号' }}</p>
-      </div>
-
-      <form class="space-y-4" @submit.prevent="submit">
+  <div class="min-h-screen bg-black text-white flex items-center justify-center px-6 py-10">
+    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+      <section class="hidden lg:flex flex-col justify-between p-10 border-r border-gray-900/80">
         <div>
-          <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">邮箱前缀</label>
-          <div class="flex gap-2">
-            <input
-              v-model="emailPrefix"
-              type="text"
-              required
-              placeholder="admin"
-              class="flex-1 bg-[#141414] border border-[#333] rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
-            />
-            <select
-              v-if="domainList.length > 0"
-              v-model="suffix"
-              class="w-[150px] bg-[#141414] border border-[#333] rounded-lg px-2 py-3 text-sm text-white"
-            >
-              <option v-for="item in domainList" :key="item" :value="item">{{ item }}</option>
-            </select>
+          <p class="text-xs tracking-[0.25em] uppercase text-gray-500 mb-5">Galaxy Global University</p>
+          <h1 class="font-custom text-5xl leading-tight tracking-[0.08em] text-white" style="text-shadow: 0 4px 40px rgba(255, 255, 255, 0.12);">
+            星河邮箱
+          </h1>
+          <p class="mt-5 text-gray-400 max-w-sm leading-7">
+            统一身份账号登录，访问教学通知、校内协同与事务邮件。
+          </p>
+        </div>
+        <div class="text-sm text-gray-500 tracking-wide">
+          <p class="mb-2">GGU Secure Mail Portal</p>
+          <p>All sessions are encrypted and audited.</p>
+        </div>
+      </section>
+
+      <section class="p-6 sm:p-8 lg:p-10">
+        <div class="flex items-center gap-3 mb-7">
+          <div class="h-10 w-10 rounded-full border border-gray-700 bg-black flex items-center justify-center">
+            <Icon name="lucide:mail" size="20" class="text-gray-200" />
+          </div>
+          <div>
+            <h2 class="text-xl font-bold tracking-wide">{{ config.title || 'Cloud Mail' }}</h2>
+            <p class="text-xs text-gray-500 mt-1 tracking-[0.18em] uppercase">{{ mode === 'login' ? 'Sign In' : 'Create Account' }}</p>
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">密码</label>
-          <input
-            v-model="password"
-            type="password"
-            required
-            placeholder="••••••••"
-            class="w-full bg-[#141414] border border-[#333] rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
-          />
-        </div>
+        <form class="space-y-4" @submit.prevent="submit">
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邮箱前缀</label>
+            <div class="flex gap-2">
+              <input
+                v-model="emailPrefix"
+                type="text"
+                required
+                placeholder="admin"
+                class="flex-1 bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
+              />
+              <select
+                v-if="domainList.length > 0"
+                v-model="suffix"
+                class="w-[150px] bg-black border border-gray-700 rounded-md px-2 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+              >
+                <option v-for="item in domainList" :key="item" :value="item">{{ item }}</option>
+              </select>
+            </div>
+          </div>
 
-        <div v-if="mode === 'register'">
-          <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">确认密码</label>
-          <input
-            v-model="confirmPassword"
-            type="password"
-            required
-            placeholder="••••••••"
-            class="w-full bg-[#141414] border border-[#333] rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
-          />
-        </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">密码</label>
+            <input
+              v-model="password"
+              type="password"
+              required
+              placeholder="••••••••"
+              class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
+            />
+          </div>
 
-        <div v-if="mode === 'register'">
-          <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">邀请码（可选）</label>
-          <input
-            v-model="inviteCode"
-            type="text"
-            placeholder="邀请码"
-            class="w-full bg-[#141414] border border-[#333] rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
-          />
-        </div>
+          <div v-if="mode === 'register'">
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">确认密码</label>
+            <input
+              v-model="confirmPassword"
+              type="password"
+              required
+              placeholder="••••••••"
+              class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
+            />
+          </div>
 
-        <div v-if="errorMsg" class="text-red-400 text-xs font-medium bg-red-950/30 p-3 rounded-lg border border-red-900/30">
-          {{ errorMsg }}
-        </div>
+          <div v-if="mode === 'register'">
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邀请码（可选）</label>
+            <input
+              v-model="inviteCode"
+              type="text"
+              placeholder="邀请码"
+              class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
+            />
+          </div>
 
-        <button
-          type="submit"
-          :disabled="loading"
-          class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium py-3 rounded-lg shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-        >
-          {{ loading ? '处理中...' : mode === 'login' ? '登录' : '注册并登录' }}
-        </button>
+          <div v-if="errorMsg" class="text-red-300 text-xs font-medium bg-red-950/30 p-3 rounded-md border border-red-900/40">
+            {{ errorMsg }}
+          </div>
 
-        <button
-          type="button"
-          class="w-full text-sm text-gray-300 hover:text-white"
-          @click="mode = mode === 'login' ? 'register' : 'login'"
-        >
-          {{ mode === 'login' ? '没有账号？去注册' : '已有账号？去登录' }}
-        </button>
-      </form>
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full px-6 py-3.5 bg-white text-black border border-white rounded-md hover:bg-gray-200 hover:border-gray-200 transition-all duration-300 font-semibold tracking-wide disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {{ loading ? '处理中...' : mode === 'login' ? '登录' : '注册并登录' }}
+          </button>
+
+          <button
+            type="button"
+            class="w-full px-6 py-3 border border-gray-700 rounded-md text-sm text-gray-200 hover:bg-white/10 hover:border-white transition-all duration-300"
+            @click="mode = mode === 'login' ? 'register' : 'login'"
+          >
+            {{ mode === 'login' ? '没有账号？去注册' : '已有账号？去登录' }}
+          </button>
+        </form>
+      </section>
     </div>
   </div>
 </template>

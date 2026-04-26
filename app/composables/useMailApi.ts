@@ -10,6 +10,7 @@ interface MailApiOptions {
 export const useMailApi = () => {
   const runtime = useRuntimeConfig()
   const { token, clearSession } = useMailState()
+  const baseURL = (runtime.public.mailApiBaseUrl || 'http://localhost:8080').replace(/\/$/, '')
 
   const request = async <T>(path: string, options: MailApiOptions = {}): Promise<T> => {
     const query = options.params ? new URLSearchParams(Object.entries(options.params)
@@ -19,7 +20,7 @@ export const useMailApi = () => {
     const target = query && query.toString() ? `${path}?${query.toString()}` : path
 
     const payload = await $fetch<MailApiEnvelope<T> | T>(target, {
-      baseURL: runtime.public.mailApiBaseUrl,
+      baseURL,
       method: options.method || 'GET',
       body: options.body,
       headers: {
