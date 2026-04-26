@@ -5,6 +5,12 @@ export default defineNuxtConfig({
     '@nuxt/ui'
   ],
 
+  runtimeConfig: {
+    public: {
+      mailApiBaseUrl: process.env.NUXT_PUBLIC_MAIL_API_BASE_URL || 'http://localhost:8080' // 云端配置时填入真实后端地址
+    }
+  },
+
   devtools: {
     enabled: true
   },
@@ -12,7 +18,9 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true },
+    '/mail': { ssr: false },
+    '/mail/**': { ssr: false }
   },
 
   compatibilityDate: '2025-01-15',
