@@ -57,4 +57,15 @@ export interface MailWebsiteConfig {
   register?: number
   loginDomain?: number
   regKey?: number
+  loginOpacity?: number
+  background?: string
+  minEmailPrefix?: number
+  linuxdoSwitch?: boolean
+  linuxdoClientId?: string
+  linuxdoCallbackUrl?: string
+  registerVerify?: number
+  regVerifyOpen?: boolean
+  siteKey?: string
+  projectLink?: boolean
+  autoRefresh?: number
 }

@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { MailItem } from '~/types/mail'
 
-const { currentAccount, selectedEmail } = useMailState()
+const { currentAccount, selectedEmail, config } = useMailState()
 const mailService = useMailService()
 const router = useRouter()
 
 const loading = ref(false)
 const timeSort = ref(0)
 const emails = ref<MailItem[]>([])
+const polling = ref(false)
+let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const formatDate = (value?: string | number) => {
   if (!value) {
@@ -45,6 +47,57 @@ const loadEmails = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const mergeLatestItems = (items: MailItem[]) => {
+  if (!items.length) {
+    return
+  }
+
+  const existing = new Set(emails.value.map(item => item.emailId))
+  const incoming = items.filter(item => !existing.has(item.emailId))
+  if (!incoming.length) {
+    return
+  }
+
+  emails.value = [...incoming, ...emails.value]
+}
+
+const loadLatest = async () => {
+  if (polling.value || !currentAccount.value?.accountId || timeSort.value !== 0) {
+    return
+  }
+
+  polling.value = true
+  try {
+    const latestId = emails.value[0]?.emailId || 0
+    const result = await mailService.emailLatest(latestId, currentAccount.value.accountId, currentAccount.value.allReceive || 0)
+    const latestList = [result.latestEmail, ...(result.list || [])].filter(Boolean) as MailItem[]
+    mergeLatestItems(latestList)
+  } catch (error) {
+    console.error(error)
+  } finally {
+    polling.value = false
+  }
+}
+
+const stopAutoRefresh = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
+}
+
+const startAutoRefresh = () => {
+  stopAutoRefresh()
+  const seconds = Number(config.value.autoRefresh ?? 0)
+  if (seconds === 0) {
+    return
+  }
+  const interval = seconds > 1 ? seconds * 1000 : 3000
+  refreshTimer = setInterval(() => {
+    loadLatest()
+  }, interval)
 }
 
 const toggleSort = () => {
@@ -91,7 +144,16 @@ const toggleStar = async (email: MailItem) => {
 
 watch(() => currentAccount.value?.accountId, () => {
   loadEmails()
+  startAutoRefresh()
 }, { immediate: true })
+
+watch(() => config.value.autoRefresh, () => {
+  startAutoRefresh()
+}, { immediate: true })
+
+onBeforeUnmount(() => {
+  stopAutoRefresh()
+})
 </script>
 
 <template>

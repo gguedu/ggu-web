@@ -5,7 +5,7 @@ definePageMeta({
 
 const router = useRouter()
 const mailService = useMailService()
-const { token, user, config, accounts, currentAccountId } = useMailState()
+const { token, user, config, accounts, currentAccountId, clearSession } = useMailState()
 
 const mode = ref<'login' | 'register'>('login')
 const emailPrefix = ref('')
@@ -35,6 +35,7 @@ const showLoginDomain = computed(() => {
 const regKeyMode = computed(() => Number(config.value.regKey ?? 1))
 const requireInviteCode = computed(() => regKeyMode.value === 0)
 const optionalInviteCode = computed(() => regKeyMode.value === 2)
+const minEmailPrefix = computed(() => Number(config.value.minEmailPrefix ?? 1))
 
 const fullEmail = computed(() => {
   const prefix = emailPrefix.value.trim()
@@ -75,6 +76,10 @@ const submit = async () => {
     errorMsg.value = '请输入邮箱'
     return
   }
+  if (emailPrefix.value.trim().length < minEmailPrefix.value) {
+    errorMsg.value = `邮箱前缀至少 ${minEmailPrefix.value} 位`
+    return
+  }
   if (!password.value) {
     errorMsg.value = '请输入密码'
     return
@@ -113,11 +118,19 @@ const submit = async () => {
 }
 
 onMounted(() => {
-  if (token.value) {
-    router.replace('/mail')
-    return
+  const init = async () => {
+    if (token.value) {
+      try {
+        await mailService.loginUserInfo()
+        await router.replace('/mail')
+        return
+      } catch {
+        clearSession()
+      }
+    }
+    await bootstrap()
   }
-  bootstrap()
+  init()
 })
 
 watch(allowRegister, (enabled) => {

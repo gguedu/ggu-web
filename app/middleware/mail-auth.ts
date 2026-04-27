@@ -7,6 +7,13 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   const { token } = useMailState()
+  if (import.meta.client && !token.value) {
+    const cached = localStorage.getItem('token') || localStorage.getItem('mail_token')
+    if (cached) {
+      token.value = cached.startsWith('Bearer ') ? cached.slice(7).trim() : cached
+    }
+  }
+
   if (!token.value) {
     return navigateTo('/mail/login')
   }

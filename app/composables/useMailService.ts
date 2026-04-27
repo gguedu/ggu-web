@@ -12,10 +12,17 @@ export const useMailService = () => {
   const accountList = (accountId?: number | null, size = 50, lastSort?: number | null) => {
     return request<MailAccount[]>('/account/list', { params: { accountId, size, lastSort } })
   }
+  const accountSetName = (accountId: number, name: string) => request<void>('/account/setName', { method: 'PUT', body: { accountId, name } })
 
   const emailList = (accountId: number, allReceive = 0, emailId?: number, timeSort = 0, size = 40, type = 0) => {
     return request<MailListResult>('/email/list', {
       params: { accountId, allReceive, emailId, timeSort, size, type }
+    })
+  }
+  const emailLatest = (emailId: number, accountId: number, allReceive = 0) => {
+    return request<MailListResult>('/email/latest', {
+      params: { emailId, accountId, allReceive },
+      timeout: 35000
     })
   }
 
@@ -29,6 +36,8 @@ export const useMailService = () => {
   const starCancel = (emailId: number) => request<void>('/star/cancel', { method: 'DELETE', params: { emailId } })
 
   const emailSend = (payload: Record<string, unknown>) => request('/email/send', { method: 'POST', body: payload })
+  const settingQuery = () => request<Record<string, unknown>>('/setting/query')
+  const settingSet = (payload: Record<string, unknown>) => request<void>('/setting/set', { method: 'PUT', body: payload })
   const resetPassword = (password: string) => request<void>('/my/resetPassword', { method: 'PUT', body: { password } })
   const deleteSelf = () => request<void>('/my/delete', { method: 'DELETE' })
 
@@ -39,13 +48,17 @@ export const useMailService = () => {
     logout,
     loginUserInfo,
     accountList,
+    accountSetName,
     emailList,
+    emailLatest,
     starList,
     emailDelete,
     emailRead,
     starAdd,
     starCancel,
     emailSend,
+    settingQuery,
+    settingSet,
     resetPassword,
     deleteSelf
   }

@@ -5,6 +5,7 @@ interface MailApiOptions {
   params?: Record<string, unknown>
   body?: Record<string, unknown> | BodyInit | null
   headers?: Record<string, string>
+  timeout?: number
 }
 
 export const useMailApi = () => {
@@ -26,6 +27,8 @@ export const useMailApi = () => {
     if (token.value) {
       headers.Authorization = token.value
     }
+    const language = import.meta.client ? (navigator.language.split('-')[0] || 'zh') : 'zh'
+    headers['accept-language'] = headers['accept-language'] || language
 
     let payload: MailApiEnvelope<T> | T
     try {
@@ -33,7 +36,8 @@ export const useMailApi = () => {
         baseURL,
         method: options.method || 'GET',
         body: options.body,
-        headers
+        headers,
+        timeout: options.timeout
       })
     } catch (error: any) {
       const statusCode = error?.statusCode || error?.response?.status
