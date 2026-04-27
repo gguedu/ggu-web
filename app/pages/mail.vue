@@ -8,6 +8,9 @@ const router = useRouter()
 const showAside = ref(false)
 const loading = ref(false)
 const isLoginRoute = computed(() => route.path === '/mail/login')
+const headerHeight = ref(88)
+const footerHeight = ref(96)
+let layoutObserver: ResizeObserver | null = null
 
 const menuItems = [
   { id: 'inbox', label: '收件箱', icon: 'lucide:inbox', path: '/mail' },
@@ -61,10 +64,54 @@ const isActive = (path: string) => {
   return route.path === path
 }
 
+const updateLayoutSize = () => {
+  if (!import.meta.client) {
+    return
+  }
+  const header = document.getElementById('global-site-header')
+  const footer = document.getElementById('global-site-footer')
+  headerHeight.value = header?.offsetHeight || 88
+  footerHeight.value = footer?.offsetHeight || 96
+}
+
+const shellStyle = computed(() => ({
+  marginTop: `${headerHeight.value}px`,
+  height: `calc(100dvh - ${headerHeight.value}px - ${footerHeight.value}px)`
+}))
+
+const asideStyle = computed(() => ({
+  top: `${headerHeight.value}px`,
+  height: `calc(100dvh - ${headerHeight.value}px - ${footerHeight.value}px)`
+}))
+
 onMounted(() => {
+  nextTick(() => {
+    updateLayoutSize()
+    const header = document.getElementById('global-site-header')
+    const footer = document.getElementById('global-site-footer')
+    if (header || footer) {
+      layoutObserver = new ResizeObserver(() => {
+        updateLayoutSize()
+      })
+      if (header) {
+        layoutObserver.observe(header)
+      }
+      if (footer) {
+        layoutObserver.observe(footer)
+      }
+    }
+  })
+  window.addEventListener('resize', updateLayoutSize)
+
   if (!isLoginRoute.value) {
     loadBaseData()
   }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateLayoutSize)
+  layoutObserver?.disconnect()
+  layoutObserver = null
 })
 
 watch(isLoginRoute, (value) => {
@@ -87,12 +134,13 @@ watch(currentAccountId, (newValue) => {
 <template>
   <NuxtPage v-if="isLoginRoute" />
 
-  <div v-else class="bg-[#141414] text-white min-h-[calc(100vh-88px)] pt-[88px]">
-    <div class="flex min-h-[calc(100vh-88px)]">
+  <div v-else class="bg-[#141414] text-white overflow-hidden" :style="shellStyle">
+    <div class="flex h-full">
       <div v-if="showAside" class="fixed inset-0 bg-black/50 z-40 md:hidden" @click="closeAside" />
 
       <aside
-        class="fixed md:static top-[88px] md:top-0 left-0 z-50 w-64 h-[calc(100vh-88px)] md:h-auto md:min-h-[calc(100vh-88px)] bg-[#1c1c1e] border-r border-[#333] transform transition-transform duration-300"
+        class="fixed md:static md:top-0 left-0 z-50 w-64 md:h-auto md:min-h-full bg-[#1c1c1e] border-r border-[#333] transform transition-transform duration-300"
+        :style="asideStyle"
         :class="showAside ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
       >
         <div class="flex items-center gap-3 px-5 py-4 border-b border-[#333]">
