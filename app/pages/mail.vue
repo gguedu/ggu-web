@@ -6,6 +6,20 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const showAside = ref(false)
+const showAccountMenu = ref(false)
+let accountMenuTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleMenuEnter = () => {
+  if (accountMenuTimer) clearTimeout(accountMenuTimer)
+  showAccountMenu.value = true
+}
+
+const handleMenuLeave = () => {
+  accountMenuTimer = setTimeout(() => {
+    showAccountMenu.value = false
+  }, 100)
+}
+
 const loading = ref(false)
 const isLoginRoute = computed(() => route.path === '/mail/login')
 const headerHeight = ref(88)
@@ -120,6 +134,24 @@ watch(isLoginRoute, (value) => {
   }
 })
 
+const gravatarUrl = ref('')
+
+watch(() => currentAccount.value?.email, async (email) => {
+  if (email && import.meta.client) {
+    try {
+      const msgUint8 = new TextEncoder().encode(email.trim().toLowerCase())
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+      const hashArray = Array.from(new Uint8Array(hashBuffer))
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      gravatarUrl.value = `https://gravatar.com/avatar/${hashHex}?d=mp`
+    } catch {
+      gravatarUrl.value = ''
+    }
+  } else {
+    gravatarUrl.value = ''
+  }
+}, { immediate: true })
+
 watch(currentAccountId, (newValue) => {
   if (!newValue) {
     return
@@ -134,12 +166,18 @@ watch(currentAccountId, (newValue) => {
 <template>
   <NuxtPage v-if="isLoginRoute" />
 
-  <div v-else class="bg-[#141414] text-white overflow-hidden" :style="shellStyle">
-    <div class="flex h-full">
+  <div v-else class="bg-black/70 text-white overflow-hidden relative isolate" :style="shellStyle">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+      <div class="absolute -right-32 -top-40 h-[460px] w-[460px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.18),rgba(0,0,0,0))]" />
+      <div class="absolute left-6 top-10 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.3),rgba(0,0,0,0))]" />
+      <div class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.65))]" />
+    </div>
+
+    <div class="relative z-10 flex h-full">
       <div v-if="showAside" class="fixed inset-0 bg-black/50 z-40 md:hidden" @click="closeAside" />
 
       <aside
-        class="fixed md:static md:top-0 left-0 z-50 w-64 md:h-auto md:min-h-full bg-[#1c1c1e] border-r border-[#333] transform transition-transform duration-300"
+        class="fixed md:static md:top-0 left-0 z-50 w-64 md:h-auto md:min-h-full bg-black/40 backdrop-blur-md border-r border-white/10 transform transition-transform duration-300 flex flex-col"
         :style="asideStyle"
         :class="showAside ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
       >
@@ -148,7 +186,8 @@ watch(currentAccountId, (newValue) => {
           <span class="font-bold text-lg tracking-wide">{{ config.title || 'Cloud Mail' }}</span>
         </div>
 
-        <nav class="px-3 py-4 space-y-1">
+        <div class="flex flex-1 flex-col min-h-0">
+          <nav class="px-3 py-4 space-y-1">
           <NuxtLink
             v-for="item in menuItems"
             :key="item.id"
@@ -169,30 +208,42 @@ watch(currentAccountId, (newValue) => {
             <Icon name="lucide:pen-square" size="16" />
             <span>写邮件</span>
           </NuxtLink>
-        </nav>
+          </nav>
+
+          <div class="mt-auto px-3 py-3 relative" @mouseenter="handleMenuEnter" @mouseleave="handleMenuLeave">
+            <transition
+              enter-active-class="transition duration-150 ease-linear"
+              enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-150 ease-linear"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 translate-y-1"
+            >
+              <div v-if="showAccountMenu" class="absolute bottom-[calc(100%-4px)] left-3 w-[calc(100%-24px)] bg-[#202123] border border-[#333] rounded-2xl shadow-2xl z-50 text-sm overflow-hidden">
+                <div class="px-1 py-1">
+                  <button class="w-full flex items-center justify-center gap-2 px-2 py-3 text-red-500 hover:bg-[#2c2c2e] rounded-xl transition-colors font-medium" @click="logout">
+                    <Icon name="lucide:log-out" size="18" />
+                    <span>退出登录</span>
+                  </button>
+                </div>
+              </div>
+            </transition>
+
+            <button class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[#2c2c2e] transition-colors text-left relative z-10 focus:outline-none">
+              <img v-if="gravatarUrl" :src="gravatarUrl" alt="Avatar" class="w-8 h-8 rounded-full bg-[#1a1a1c] shrink-0 object-cover" />
+              <div v-else class="w-8 h-8 rounded-full bg-[#1a1a1c] flex items-center justify-center text-white shrink-0 text-sm font-medium">
+                {{ currentAccount?.email?.charAt(0).toUpperCase() || 'U' }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-gray-200 truncate">{{ currentAccount?.email?.split('@')[0] || '账号' }}</div>
+                <div class="text-[11px] text-gray-400 truncate">{{ currentAccount?.email || '未选择账户' }}</div>
+              </div>
+            </button>
+          </div>
+        </div>
       </aside>
 
-      <main class="flex-1 min-w-0 bg-[#141414] flex flex-col">
-        <header class="flex items-center justify-between px-4 md:px-6 py-3 border-b border-[#333] gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            <button class="md:hidden p-1 rounded-md text-gray-400 hover:bg-[#2c2c2e]" @click="showAside = !showAside">
-              <Icon name="lucide:menu" size="22" />
-            </button>
-            <div class="text-sm text-gray-300 truncate">{{ currentAccount?.email || '未选择账户' }}</div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <select
-              v-model.number="currentAccountId"
-              class="bg-[#1c1c1e] border border-[#333] rounded px-2 py-1 text-sm text-gray-200 max-w-[180px]"
-            >
-              <option v-for="item in accounts" :key="item.accountId" :value="item.accountId">{{ item.email }}</option>
-            </select>
-            <button class="px-2 py-1 rounded text-sm text-gray-300 hover:bg-[#2c2c2e]" @click="router.push('/mail/login')">登录页</button>
-            <button class="px-2 py-1 rounded text-sm text-red-300 hover:bg-red-900/30" @click="logout">退出</button>
-          </div>
-        </header>
-
+      <main class="flex-1 min-w-0 bg-black/35 backdrop-blur-sm flex flex-col">
         <div class="flex-1 min-h-0 overflow-auto">
           <NuxtPage />
         </div>

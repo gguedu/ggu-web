@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col min-h-0 bg-[#1c1c1e] text-white">
+  <div class="flex-1 flex flex-col min-h-0 bg-black/20 text-white">
     <div class="flex items-center justify-between px-6 py-4 border-b border-[#333] shadow-sm">
       <div class="flex items-center gap-4">
         <h2 class="text-lg font-bold text-gray-200">收件箱</h2>

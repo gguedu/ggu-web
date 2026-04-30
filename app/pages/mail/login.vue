@@ -141,8 +141,14 @@ watch(allowRegister, (enabled) => {
 </script>
 
 <template>
-  <div class="h-screen bg-black text-white flex items-center justify-center px-6 py-6 overflow-hidden">
-    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+  <div class="h-screen bg-black text-white flex items-center justify-center px-6 py-6 overflow-hidden relative">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+      <div class="absolute -right-40 -top-48 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),rgba(0,0,0,0))]" />
+      <div class="absolute left-10 top-20 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),rgba(0,0,0,0))]" />
+      <div class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.85))]" />
+    </div>
+
+    <div class="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
       <section class="hidden lg:flex flex-col justify-between p-10 border-r border-gray-900/80">
         <div>
           <p class="text-xs tracking-[0.25em] uppercase text-gray-500 mb-5">Galaxy Global University</p>

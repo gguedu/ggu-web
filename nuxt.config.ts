@@ -8,7 +8,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // 留空由运行时环境变量 NUXT_PUBLIC_MAIL_API_BASE_URL 注入
-      mailApiBaseUrl: ''
+      mailApiBaseUrl: '',
+      postApiBaseUrl: 'https://postapi.ggu.edu.kg'
     }
   },
 
