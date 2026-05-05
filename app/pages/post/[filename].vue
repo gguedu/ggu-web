@@ -1,20 +1,24 @@
 <script setup lang="ts">
-interface PostDetailResponse {
-  filename: string
+interface PostDetail {
+  path: string
   title: string
-  date: string
-  content: string
+  date?: string
+  description?: string
+  cover?: string
+  category?: string
+  tags?: string[]
+  body: unknown
 }
 
 const route = useRoute()
-const config = useRuntimeConfig()
-
 const filename = computed(() => String(route.params.filename || ''))
+const postPath = computed(() => `/post/${filename.value}`)
 
-const { data, pending, error } = await useFetch<PostDetailResponse>(
-  () => `/api/post/${filename.value}`,
+const { data, pending, error } = await useAsyncData(
+  () => `post-${filename.value}`,
+  () => queryCollection('posts').path(postPath.value).first() as Promise<PostDetail | null>,
   {
-    baseURL: config.public.postApiBaseUrl
+    watch: [filename]
   }
 )
 
@@ -26,6 +30,9 @@ const formattedDate = computed(() => {
     day: '2-digit'
   })
 })
+
+const category = computed(() => data.value?.category || 'GGU')
+const tags = computed(() => data.value?.tags?.length ? data.value.tags : ['文库'])
 </script>
 
 <template>
@@ -71,11 +78,26 @@ const formattedDate = computed(() => {
           <div class="text-sm text-gray-400">
             {{ formattedDate }}
           </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">📘 {{ category }}</span>
+            <span
+              v-for="tag in tags"
+              :key="tag"
+              class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1"
+            ># {{ tag }}</span>
+          </div>
         </header>
 
-        <div
+        <img
+          v-if="data.cover"
+          :src="data.cover"
+          :alt="data.title"
+          class="w-full rounded-2xl border border-white/10 object-cover shadow-[0_18px_40px_rgba(0,0,0,0.4)]"
+        >
+
+        <ContentRenderer
+          :value="data"
           class="post-content"
-          v-html="data.content"
         />
       </article>
     </section>

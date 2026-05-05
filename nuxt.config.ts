@@ -1,4 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const normalizeUnderscoreEmphasis = (value: string) => {
+  const segments = value.split(/(```[\s\S]*?```|`[^`\n]*`)/g)
+
+  return segments.map((segment) => {
+    if (segment.startsWith('```') || segment.startsWith('`')) {
+      return segment
+    }
+
+    return segment
+      .replace(/___([^_\n][^_\n]*?)___/g, '***$1***')
+      .replace(/__([^_\n][^_\n]*?)__/g, '**$1**')
+      .replace(/(^|[^\w])_([^_\n][^_\n]*?)_([^\w]|$)/g, '$1*$2*$3')
+  }).join('')
+}
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -12,14 +27,20 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
   content: {
+    build: {
+      markdown: {
+        highlight: {
+          theme: 'github-dark'
+        }
+      }
+    },
     experimental: { nativeSqlite: true }
   },
 
   runtimeConfig: {
     public: {
       // 留空由运行时环境变量 NUXT_PUBLIC_MAIL_API_BASE_URL 注入
-      mailApiBaseUrl: '',
-      postApiBaseUrl: 'https://postapi.ggu.edu.kg'
+      mailApiBaseUrl: ''
     }
   },
 
@@ -30,6 +51,14 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-01-15',
+
+  hooks: {
+    'content:file:beforeParse': ({ file }) => {
+      if (file.extension === 'md') {
+        file.body = normalizeUnderscoreEmphasis(file.body)
+      }
+    }
+  },
 
   eslint: {
     config: {

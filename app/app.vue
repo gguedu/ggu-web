@@ -1,7 +1,6 @@
 <script setup>
 const route = useRoute()
 const isJoinDoscRoute = computed(() => route.path === '/joindosc')
-const isPostRoute = computed(() => route.path.startsWith('/post'))
 const isPostIndex = computed(() => route.path === '/post')
 const bodyClass = computed(() => (isPostIndex.value ? 'no-scroll' : ''))
 useHead({
@@ -41,15 +40,30 @@ useHead({
 <template>
   <div :class="['bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden', (isJoinDoscRoute || isPostIndex) ? 'h-screen' : 'min-h-screen']">
     <!-- Header -->
-    <header id="global-site-header" class="w-full flex justify-between items-center py-6 px-10 border-b border-gray-800/50 absolute top-0 z-20 bg-black/50 backdrop-blur-md">
+    <header
+      id="global-site-header"
+      class="w-full flex justify-between items-center py-6 px-10 border-b border-gray-800/50 absolute top-0 z-20 bg-black/50 backdrop-blur-md"
+    >
       <div class="text-xl font-bold tracking-widest uppercase text-white">
         GGU
       </div>
       <nav class="hidden md:flex gap-10 text-sm text-gray-400 font-medium">
-        <NuxtLink to="/" class="hover:text-white transition-colors duration-300">首页</NuxtLink>
-        <a href="#" class="hover:text-white transition-colors duration-300">关于我们</a>
-        <a href="#" class="hover:text-white transition-colors duration-300">学术课程</a>
-        <a href="#" class="hover:text-white transition-colors duration-300">招生信息</a>
+        <NuxtLink
+          to="/"
+          class="hover:text-white transition-colors duration-300"
+        >首页</NuxtLink>
+        <a
+          href="#"
+          class="hover:text-white transition-colors duration-300"
+        >关于我们</a>
+        <a
+          href="#"
+          class="hover:text-white transition-colors duration-300"
+        >学术课程</a>
+        <a
+          href="#"
+          class="hover:text-white transition-colors duration-300"
+        >招生信息</a>
       </nav>
       <div class="text-sm border border-gray-600 px-5 py-2 rounded-full cursor-pointer hover:bg-white hover:text-black transition-all duration-300">
         校园门户
@@ -59,13 +73,26 @@ useHead({
     <NuxtPage />
 
     <!-- Footer -->
-    <footer id="global-site-footer" v-if="!isJoinDoscRoute && !isPostIndex" class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80">
+    <footer
+      v-if="!isJoinDoscRoute && !isPostIndex"
+      id="global-site-footer"
+      class="w-full py-8 text-center text-xs md:text-sm text-gray-600 border-t border-gray-900 mt-auto z-20 relative bg-black/80"
+    >
       <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <p>&copy; 2026 Galaxy Global University. 保留所有权利.</p>
         <div class="flex gap-4 mt-4 md:mt-0">
-          <a href="#" class="hover:text-gray-300 transition-colors">隐私政策</a>
-          <a href="#" class="hover:text-gray-300 transition-colors">使用条款</a>
-          <a href="#" class="hover:text-gray-300 transition-colors">联系方式</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >隐私政策</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >使用条款</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >联系方式</a>
         </div>
       </div>
     </footer>
