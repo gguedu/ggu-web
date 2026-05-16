@@ -1,30 +1,30 @@
 <script setup lang="ts">
 interface PostItem {
-  path: string
-  stem: string
-  title: string
-  date?: string
-  description?: string
-  cover?: string
-  category?: string
-  tags?: string[]
+  path: string;
+  stem: string;
+  title: string;
+  date?: string;
+  description?: string;
+  cover?: string;
+  category?: string;
+  tags?: string[];
 }
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const page = ref(Number(route.query.page) || 1)
-const limit = 12
+const page = ref(Number(route.query.page) || 1);
+const limit = 12;
 
 watch(
   () => route.query.page,
   (value) => {
-    const nextPage = Number(value) || 1
+    const nextPage = Number(value) || 1;
     if (nextPage !== page.value) {
-      page.value = nextPage
+      page.value = nextPage;
     }
-  }
-)
+  },
+);
 
 const { data, pending, error } = await useAsyncData(
   () => `posts-page-${page.value}`,
@@ -35,63 +35,67 @@ const { data, pending, error } = await useAsyncData(
         .skip((page.value - 1) * limit)
         .limit(limit)
         .all(),
-      queryCollection('posts').count('*')
-    ])
+      queryCollection('posts').count('*'),
+    ]);
 
     return {
       items: items as PostItem[],
-      total
-    }
+      total,
+    };
   },
   {
-    watch: [page]
-  }
-)
+    watch: [page],
+  },
+);
 
-const posts = computed(() => data.value?.items ?? [])
-const total = computed(() => data.value?.total ?? 0)
-const totalPages = computed(() => Math.max(Math.ceil(total.value / limit), 1))
+const posts = computed(() => data.value?.items ?? []);
+const total = computed(() => data.value?.total ?? 0);
+const totalPages = computed(() => Math.max(Math.ceil(total.value / limit), 1));
 
 const formatDate = (value?: string) => {
-  if (!value) return ''
+  if (!value) return '';
   return new Date(value).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit'
-  })
-}
+    day: '2-digit',
+  });
+};
 
-const getInitial = (title: string) => title?.trim()?.slice(0, 1) || 'G'
-const getPostUrl = (item: PostItem) => item.path
-const getCategory = (item: PostItem) => item.category || 'GGU'
-const getTags = (item: PostItem) => item.tags?.length ? item.tags : ['文库']
+const getInitial = (title: string) => title?.trim()?.slice(0, 1) || 'G';
+const getPostUrl = (item: PostItem) => item.path;
+const getCategory = (item: PostItem) => item.category || 'GGU';
+const getTags = (item: PostItem) => (item.tags?.length ? item.tags : ['文库']);
 
 const goToPage = (nextPage: number) => {
-  const safePage = Math.min(Math.max(nextPage, 1), totalPages.value)
+  const safePage = Math.min(Math.max(nextPage, 1), totalPages.value);
   router.push({
     path: '/post',
-    query: { page: String(safePage) }
-  })
-}
+    query: { page: String(safePage) },
+  });
+};
 </script>
 
 <template>
   <main class="relative h-screen overflow-hidden bg-black text-white">
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div class="absolute -right-40 -top-48 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),rgba(0,0,0,0))]" />
-      <div class="absolute left-10 top-20 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),rgba(0,0,0,0))]" />
-      <div class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.85))]" />
+      <div
+        class="absolute -right-40 -top-48 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),rgba(0,0,0,0))]"
+      />
+      <div
+        class="absolute left-10 top-20 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),rgba(0,0,0,0))]"
+      />
+      <div
+        class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.85))]"
+      />
     </div>
 
-    <section class="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-8 px-6 pb-8 pt-28 box-border min-h-0">
+    <section
+      class="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-8 px-6 pb-8 pt-28 box-border min-h-0"
+    >
       <header class="flex flex-col gap-6">
         <div class="flex flex-col gap-4">
-          <p class="text-sm uppercase tracking-[0.4em] text-gray-400">
-            GGU Post Archive
-          </p>
-          <h1 class="text-4xl font-semibold tracking-[0.1em] md:text-5xl">
-            星河文库
-          </h1>
+          <p class="text-sm uppercase tracking-[0.4em] text-gray-400">GGU Post Archive</p>
+          <h1 class="text-4xl font-semibold tracking-[0.1em] md:text-5xl">星河文库</h1>
           <p class="max-w-2xl text-base text-gray-400">
             汇集校园新闻、学术活动与研究速递。每一篇文章都由构建引擎自动整理，确保干净、快速、无噪声的阅读体验。
           </p>
@@ -116,50 +120,49 @@ const goToPage = (nextPage: number) => {
             <div class="flex flex-col gap-6 p-6 md:flex-row md:items-center md:gap-10">
               <div class="flex flex-1 flex-col gap-4">
                 <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-                  <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">📅 {{ formatDate(item.date) }}</span>
-                  <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1">📘 {{ getCategory(item) }}</span>
+                  <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1"
+                    >📅 {{ formatDate(item.date) }}</span
+                  >
+                  <span class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1"
+                    >📘 {{ getCategory(item) }}</span
+                  >
                   <span
                     v-for="tag in getTags(item)"
                     :key="tag"
                     class="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1"
-                  ># {{ tag }}</span>
+                    ># {{ tag }}</span
+                  >
                 </div>
                 <h3 class="text-2xl font-semibold leading-snug text-white">
-                  <NuxtLink
-                    :to="getPostUrl(item)"
-                    class="hover:text-white/80"
-                  >
+                  <NuxtLink :to="getPostUrl(item)" class="hover:text-white/80">
                     {{ item.title }}
                   </NuxtLink>
                 </h3>
                 <p class="text-sm leading-relaxed text-gray-400 line-clamp-3">
                   {{ item.description }}
                 </p>
-                <div class="mt-2 text-xs text-gray-500">
-                  阅读时长 · 1 分钟
-                </div>
+                <div class="mt-2 text-xs text-gray-500">阅读时长 · 1 分钟</div>
               </div>
 
               <NuxtLink
                 :to="getPostUrl(item)"
                 class="relative block overflow-hidden rounded-2xl border border-white/10 bg-black/40 md:h-32 md:w-56"
               >
-                <div
-                  v-if="item.cover"
-                  class="h-48 w-full overflow-hidden md:h-full"
-                >
+                <div v-if="item.cover" class="h-48 w-full overflow-hidden md:h-full">
                   <img
                     :src="item.cover"
                     :alt="item.title"
                     class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                     loading="lazy"
-                  >
+                  />
                 </div>
                 <div
                   v-else
                   class="flex h-48 items-center justify-center bg-gradient-to-br from-slate-800 via-slate-900 to-black md:h-full"
                 >
-                  <span class="text-5xl font-semibold text-white/60">{{ getInitial(item.title) }}</span>
+                  <span class="text-5xl font-semibold text-white/60">{{
+                    getInitial(item.title)
+                  }}</span>
                 </div>
               </NuxtLink>
             </div>
@@ -196,9 +199,7 @@ const goToPage = (nextPage: number) => {
         >
           上一页
         </button>
-        <div class="text-xs uppercase tracking-[0.3em]">
-          Page {{ page }} of {{ totalPages }}
-        </div>
+        <div class="text-xs uppercase tracking-[0.3em]">Page {{ page }} of {{ totalPages }}</div>
         <button
           class="rounded-full border border-white/15 px-5 py-2 transition hover:border-white/40 disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="page >= totalPages"

@@ -68,6 +68,7 @@ The mail section uses a layered architecture:
 ### Rendering Strategy
 
 The project uses hybrid rendering configured in `nuxt.config.ts`:
+
 - `/` (index): **Prerendered** at build time
 - `/mail/**`: **Client-side only** (`ssr: false`) for SPA experience
 - Route rules: `routeRules: { '/': { prerender: true }, '/mail': { ssr: false } }`

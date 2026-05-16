@@ -17,7 +17,7 @@ tags:
 正文段落，包含换行。  
 这是同一段中的第二行。
 
-**粗体**、__下划线粗体__、*斜体*、_下划线斜体_、***粗斜体***、___下划线粗斜体___、~~删除线~~。
+**粗体**、**下划线粗体**、_斜体_、_下划线斜体_、**_粗斜体_**、**_下划线粗斜体_**、~~删除线~~。
 
 [链接](https://example.com) 与 <https://example.com>
 
@@ -42,12 +42,12 @@ tags:
 行内代码：`console.log('hello')`
 
 ```ts
-const message: string = 'Hello Markdown'
-console.log(message)
+const message: string = 'Hello Markdown';
+console.log(message);
 ```
 
 | 名称 | 类型 | 状态 |
-| --- | --- | --- |
+| ---- | ---- | ---- |
 | 标题 | 文本 | 正常 |
 | 代码 | 组件 | 正常 |
 | 表格 | 组件 | 正常 |

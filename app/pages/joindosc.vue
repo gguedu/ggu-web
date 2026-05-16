@@ -1,11 +1,15 @@
 <script setup>
-const showForm = ref(false)
+const showForm = ref(false);
 </script>
 
 <template>
   <main class="flex-1 w-full flex flex-col pt-24 pb-8 md:px-8 px-4 overflow-hidden z-10">
-    <div class="flex-1 w-full max-w-7xl mx-auto bg-white/5 rounded-xl border border-gray-800 p-4 md:p-6 backdrop-blur-sm shadow-2xl flex flex-col overflow-hidden relative z-10">
-      <h2 class="text-2xl md:text-3xl font-bold mb-4 text-center text-white tracking-widest font-custom shrink-0">
+    <div
+      class="flex-1 w-full max-w-7xl mx-auto bg-white/5 rounded-xl border border-gray-800 p-4 md:p-6 backdrop-blur-sm shadow-2xl flex flex-col overflow-hidden relative z-10"
+    >
+      <h2
+        class="text-2xl md:text-3xl font-bold mb-4 text-center text-white tracking-widest font-custom shrink-0"
+      >
         线上申请
       </h2>
 
@@ -14,11 +18,9 @@ const showForm = ref(false)
         v-if="!showForm"
         class="flex-1 w-full border border-gray-700/50 bg-black/40 rounded-lg flex flex-col items-center justify-center p-8 text-center backdrop-blur-md"
       >
-        <h3 class="text-3xl font-custom text-white mb-6 tracking-widest">
-          欢迎申请星河环球大学
-        </h3>
+        <h3 class="text-3xl font-custom text-white mb-6 tracking-widest">欢迎申请星河环球大学</h3>
         <p class="text-gray-400 mb-10 text-lg tracking-wider max-w-2xl leading-relaxed">
-          加入我们，开启探索知识与宇宙奥秘的旅程。<br>
+          加入我们，开启探索知识与宇宙奥秘的旅程。<br />
           表单服务由Google Dosc提供，请确保您的网络环境可正常访问
         </p>
         <button

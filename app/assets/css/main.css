@@ -1,20 +1,20 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
 
-  --color-green-50: #EFFDF5;
-  --color-green-100: #D9FBE8;
-  --color-green-200: #B3F5D1;
-  --color-green-300: #75EDAE;
-  --color-green-400: #00DC82;
-  --color-green-500: #00C16A;
-  --color-green-600: #00A155;
-  --color-green-700: #007F45;
+  --color-green-50: #effdf5;
+  --color-green-100: #d9fbe8;
+  --color-green-200: #b3f5d1;
+  --color-green-300: #75edae;
+  --color-green-400: #00dc82;
+  --color-green-500: #00c16a;
+  --color-green-600: #00a155;
+  --color-green-700: #007f45;
   --color-green-800: #016538;
-  --color-green-900: #0A5331;
-  --color-green-950: #052E16;
+  --color-green-900: #0a5331;
+  --color-green-950: #052e16;
 }
 
 .post-content {
@@ -83,23 +83,23 @@
   color: #9ca3af;
 }
 
-.post-content :where([class*="bg-default"], [class*="bg-muted"], [class*="bg-elevated"]) {
+.post-content :where([class*='bg-default'], [class*='bg-muted'], [class*='bg-elevated']) {
   background-color: #0b1118;
 }
 
-.post-content :where([class*="border-default"], [class*="border-muted"]) {
+.post-content :where([class*='border-default'], [class*='border-muted']) {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.post-content :where([class*="text-default"], [class*="text-muted"], [class*="text-toned"]) {
+.post-content :where([class*='text-default'], [class*='text-muted'], [class*='text-toned']) {
   color: #cbd5e1;
 }
 
-.post-content :where([class*="text-highlighted"]) {
+.post-content :where([class*='text-highlighted']) {
   color: #ffffff;
 }
 
-.post-content :where(.u-alert, [role="alert"]) {
+.post-content :where(.u-alert, [role='alert']) {
   background: #0b1118;
   border-color: rgba(255, 255, 255, 0.1);
   color: #d1d5db;
@@ -109,7 +109,7 @@
   text-underline-offset: 4px;
 }
 
-.post-content :where(button, [role="button"]) {
+.post-content :where(button, [role='button']) {
   transition:
     background-color 160ms ease,
     border-color 160ms ease,
@@ -208,15 +208,15 @@
   border-color: transparent !important;
 }
 
-.post-content :where(.not-prose, [class*="rounded"]) {
+.post-content :where(.not-prose, [class*='rounded']) {
   color: inherit;
 }
 
-.post-content :where([data-state="active"]) {
+.post-content :where([data-state='active']) {
   color: #ffffff;
 }
 
-.post-content :where([data-state="open"]) {
+.post-content :where([data-state='open']) {
   color: #ffffff;
 }
 

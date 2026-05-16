@@ -1,154 +1,164 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false
-})
+  layout: false,
+});
 
-const router = useRouter()
-const mailService = useMailService()
-const { token, user, config, accounts, currentAccountId, clearSession } = useMailState()
+const router = useRouter();
+const mailService = useMailService();
+const { token, user, config, accounts, currentAccountId, clearSession } = useMailState();
 
-const mode = ref<'login' | 'register'>('login')
-const emailPrefix = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const inviteCode = ref('')
-const suffix = ref('')
-const loading = ref(false)
-const errorMsg = ref('')
+const mode = ref<'login' | 'register'>('login');
+const emailPrefix = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const inviteCode = ref('');
+const suffix = ref('');
+const loading = ref(false);
+const errorMsg = ref('');
 
 const allowRegister = computed(() => {
-  const value = config.value.register
+  const value = config.value.register;
   if (value === undefined || value === null) {
-    return true
+    return true;
   }
-  return Number(value) === 0
-})
+  return Number(value) === 0;
+});
 
 const showLoginDomain = computed(() => {
-  const value = config.value.loginDomain
+  const value = config.value.loginDomain;
   if (value === undefined || value === null) {
-    return true
+    return true;
   }
-  return Number(value) === 0
-})
+  return Number(value) === 0;
+});
 
-const regKeyMode = computed(() => Number(config.value.regKey ?? 1))
-const requireInviteCode = computed(() => regKeyMode.value === 0)
-const optionalInviteCode = computed(() => regKeyMode.value === 2)
-const minEmailPrefix = computed(() => Number(config.value.minEmailPrefix ?? 1))
+const regKeyMode = computed(() => Number(config.value.regKey ?? 1));
+const requireInviteCode = computed(() => regKeyMode.value === 0);
+const optionalInviteCode = computed(() => regKeyMode.value === 2);
+const minEmailPrefix = computed(() => Number(config.value.minEmailPrefix ?? 1));
 
 const fullEmail = computed(() => {
-  const prefix = emailPrefix.value.trim()
+  const prefix = emailPrefix.value.trim();
   if (!prefix) {
-    return ''
+    return '';
   }
   if (prefix.includes('@')) {
-    return prefix
+    return prefix;
   }
   if (!showLoginDomain.value) {
-    return prefix
+    return prefix;
   }
-  return `${prefix}${suffix.value || ''}`
-})
+  return `${prefix}${suffix.value || ''}`;
+});
 
-const domainList = computed(() => config.value.domainList || [])
+const domainList = computed(() => config.value.domainList || []);
 
 const bootstrap = async () => {
-  config.value = await mailService.websiteConfig()
+  config.value = await mailService.websiteConfig();
   if (domainList.value.length > 0 && !suffix.value) {
-    suffix.value = domainList.value[0] || ''
+    suffix.value = domainList.value[0] || '';
   }
-}
+};
 
 const completeSession = async (sessionToken: string) => {
-  token.value = sessionToken
-  const profile = await mailService.loginUserInfo()
-  user.value = profile
-  const accountList = await mailService.accountList(0, 100)
-  accounts.value = accountList
-  currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null
-  await router.push('/mail')
-}
+  token.value = sessionToken;
+  const profile = await mailService.loginUserInfo();
+  user.value = profile;
+  const accountList = await mailService.accountList(0, 100);
+  accounts.value = accountList;
+  currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null;
+  await router.push('/mail');
+};
 
 const submit = async () => {
-  errorMsg.value = ''
+  errorMsg.value = '';
   if (!fullEmail.value) {
-    errorMsg.value = '请输入邮箱'
-    return
+    errorMsg.value = '请输入邮箱';
+    return;
   }
   if (emailPrefix.value.trim().length < minEmailPrefix.value) {
-    errorMsg.value = `邮箱前缀至少 ${minEmailPrefix.value} 位`
-    return
+    errorMsg.value = `邮箱前缀至少 ${minEmailPrefix.value} 位`;
+    return;
   }
   if (!password.value) {
-    errorMsg.value = '请输入密码'
-    return
+    errorMsg.value = '请输入密码';
+    return;
   }
 
-  loading.value = true
+  loading.value = true;
   try {
     if (mode.value === 'login') {
-      const res = await mailService.login(fullEmail.value, password.value)
-      await completeSession(res.token)
+      const res = await mailService.login(fullEmail.value, password.value);
+      await completeSession(res.token);
     } else {
       if (!allowRegister.value) {
-        throw new Error('当前站点未开放注册')
+        throw new Error('当前站点未开放注册');
       }
       if (password.value.length < 6) {
-        throw new Error('密码长度至少 6 位')
+        throw new Error('密码长度至少 6 位');
       }
       if (password.value !== confirmPassword.value) {
-        throw new Error('两次输入密码不一致')
+        throw new Error('两次输入密码不一致');
       }
       if (requireInviteCode.value && !inviteCode.value.trim()) {
-        throw new Error('当前注册需要邀请码')
+        throw new Error('当前注册需要邀请码');
       }
       const res = await mailService.register({
         email: fullEmail.value,
         password: password.value,
-        code: inviteCode.value || undefined
-      })
-      await completeSession(res.token)
+        code: inviteCode.value || undefined,
+      });
+      await completeSession(res.token);
     }
   } catch (error: any) {
-    errorMsg.value = error?.message || '登录失败，请检查配置与网络'
+    errorMsg.value = error?.message || '登录失败，请检查配置与网络';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 onMounted(() => {
   const init = async () => {
     if (token.value) {
       try {
-        await mailService.loginUserInfo()
-        await router.replace('/mail')
-        return
+        await mailService.loginUserInfo();
+        await router.replace('/mail');
+        return;
       } catch {
-        clearSession()
+        clearSession();
       }
     }
-    await bootstrap()
-  }
-  init()
-})
+    await bootstrap();
+  };
+  init();
+});
 
 watch(allowRegister, (enabled) => {
   if (!enabled && mode.value === 'register') {
-    mode.value = 'login'
+    mode.value = 'login';
   }
-})
+});
 </script>
 
 <template>
-  <div class="h-screen bg-black text-white flex items-center justify-center px-6 py-6 overflow-hidden relative">
+  <div
+    class="h-screen bg-black text-white flex items-center justify-center px-6 py-6 overflow-hidden relative"
+  >
     <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
-      <div class="absolute -right-40 -top-48 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),rgba(0,0,0,0))]" />
-      <div class="absolute left-10 top-20 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),rgba(0,0,0,0))]" />
-      <div class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.85))]" />
+      <div
+        class="absolute -right-40 -top-48 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),rgba(0,0,0,0))]"
+      />
+      <div
+        class="absolute left-10 top-20 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(0,148,255,0.18),rgba(0,0,0,0))]"
+      />
+      <div
+        class="absolute bottom-0 right-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(0,0,0,0),rgba(0,0,0,0.85))]"
+      />
     </div>
 
-    <div class="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+    <div
+      class="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_430px] border border-gray-800 bg-black rounded-2xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)]"
+    >
       <section class="hidden lg:flex flex-col justify-between p-10 border-r border-gray-900/80">
         <div>
           <p class="text-xs tracking-[0.25em] uppercase text-gray-500 mb-5">
@@ -156,7 +166,7 @@ watch(allowRegister, (enabled) => {
           </p>
           <h1
             class="font-custom text-5xl leading-tight tracking-[0.08em] text-white"
-            style="text-shadow: 0 4px 40px rgba(255, 255, 255, 0.12);"
+            style="text-shadow: 0 4px 40px rgba(255, 255, 255, 0.12)"
           >
             星河邮箱
           </h1>
@@ -165,21 +175,17 @@ watch(allowRegister, (enabled) => {
           </p>
         </div>
         <div class="text-sm text-gray-500 tracking-wide">
-          <p class="mb-2">
-            GGU Secure Mail Portal
-          </p>
+          <p class="mb-2">GGU Secure Mail Portal</p>
           <p>All sessions are encrypted and audited.</p>
         </div>
       </section>
 
       <section class="p-6 sm:p-8 lg:p-10">
         <div class="flex items-center gap-3 mb-7">
-          <div class="h-10 w-10 rounded-full border border-gray-700 bg-black flex items-center justify-center">
-            <Icon
-              name="lucide:mail"
-              size="20"
-              class="text-gray-200"
-            />
+          <div
+            class="h-10 w-10 rounded-full border border-gray-700 bg-black flex items-center justify-center"
+          >
+            <Icon name="lucide:mail" size="20" class="text-gray-200" />
           </div>
           <div>
             <h2 class="text-xl font-bold tracking-wide">
@@ -191,12 +197,11 @@ watch(allowRegister, (enabled) => {
           </div>
         </div>
 
-        <form
-          class="space-y-4"
-          @submit.prevent="submit"
-        >
+        <form class="space-y-4" @submit.prevent="submit">
           <div>
-            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邮箱前缀</label>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]"
+              >邮箱前缀</label
+            >
             <div class="flex gap-2">
               <input
                 v-model="emailPrefix"
@@ -204,17 +209,13 @@ watch(allowRegister, (enabled) => {
                 required
                 :placeholder="showLoginDomain ? 'admin' : 'name@example.com'"
                 class="flex-1 bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
-              >
+              />
               <select
                 v-if="showLoginDomain && domainList.length > 0"
                 v-model="suffix"
                 class="w-[150px] bg-black border border-gray-700 rounded-md px-2 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
               >
-                <option
-                  v-for="item in domainList"
-                  :key="item"
-                  :value="item"
-                >
+                <option v-for="item in domainList" :key="item" :value="item">
                   {{ item }}
                 </option>
               </select>
@@ -222,35 +223,41 @@ watch(allowRegister, (enabled) => {
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">密码</label>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]"
+              >密码</label
+            >
             <input
               v-model="password"
               type="password"
               required
               placeholder="••••••••"
               class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
-            >
+            />
           </div>
 
           <div v-if="mode === 'register'">
-            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">确认密码</label>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]"
+              >确认密码</label
+            >
             <input
               v-model="confirmPassword"
               type="password"
               required
               placeholder="••••••••"
               class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
-            >
+            />
           </div>
 
           <div v-if="mode === 'register' && (requireInviteCode || optionalInviteCode)">
-            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">邀请码</label>
+            <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]"
+              >邀请码</label
+            >
             <input
               v-model="inviteCode"
               type="text"
               :placeholder="requireInviteCode ? '请输入邀请码' : '邀请码（可选）'"
               class="w-full bg-black border border-gray-700 rounded-md px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-white transition-colors"
-            >
+            />
           </div>
 
           <div
