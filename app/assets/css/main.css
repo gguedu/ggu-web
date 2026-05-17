@@ -1,74 +1,479 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme static {
   --font-sans: 'Public Sans', sans-serif;
 
-  --color-green-50: #EFFDF5;
-  --color-green-100: #D9FBE8;
-  --color-green-200: #B3F5D1;
-  --color-green-300: #75EDAE;
-  --color-green-400: #00DC82;
-  --color-green-500: #00C16A;
-  --color-green-600: #00A155;
-  --color-green-700: #007F45;
+  --color-green-50: #effdf5;
+  --color-green-100: #d9fbe8;
+  --color-green-200: #b3f5d1;
+  --color-green-300: #75edae;
+  --color-green-400: #00dc82;
+  --color-green-500: #00c16a;
+  --color-green-600: #00a155;
+  --color-green-700: #007f45;
   --color-green-800: #016538;
-  --color-green-900: #0A5331;
-  --color-green-950: #052E16;
+  --color-green-900: #0a5331;
+  --color-green-950: #052e16;
 }
 
+/* ─── Post Content: Design System Aligned ─── */
+/* Colors: canvas #000, surface-1 #11161c, surface-2 #0b1118, surface-3 #070b10
+   Ink: #fff, ink-muted #9ca3af, ink-subtle #6b7280, link #93c5fd
+   Hairline: rgba(255,255,255,0.1), Accent-blue: #3b82f6 */
+
+/* — Base — */
 .post-content {
   color: #d1d5db;
   font-size: 1rem;
   line-height: 1.8;
+  letter-spacing: 0;
 }
 
-.post-content h1,
-.post-content h2,
-.post-content h3,
-.post-content h4 {
+.post-content > :first-child {
+  margin-top: 0;
+}
+
+.post-content > :last-child {
+  margin-bottom: 0;
+}
+
+/* — Headings — */
+.post-content h2 {
   color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.post-content h3 {
+  color: #ffffff;
+  font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.3;
-  margin: 1.5rem 0 0.75rem;
+  margin: 2rem 0 0.75rem;
 }
 
-.post-content p,
-.post-content ul,
-.post-content ol,
-.post-content blockquote {
+.post-content h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.post-content h5 {
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.post-content h6 {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 1.25rem 0 0.5rem;
+}
+
+/* — Paragraphs & Flow — */
+.post-content p {
   margin: 0.75rem 0;
 }
 
-.post-content ul,
-.post-content ol {
-  padding-left: 1.5rem;
+.post-content strong {
+  color: #ffffff;
+  font-weight: 700;
 }
 
+.post-content em {
+  color: #f3f4f6;
+  font-style: italic;
+}
+
+.post-content strong em,
+.post-content em strong {
+  color: #ffffff;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.post-content del {
+  color: #6b7280;
+  text-decoration: line-through;
+}
+
+/* — Links — */
 .post-content a {
   color: #93c5fd;
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(147, 197, 253, 0.3);
+  transition: color 160ms ease, text-decoration-color 160ms ease;
 }
 
+.post-content a:hover {
+  color: #ffffff;
+  text-decoration-color: rgba(255, 255, 255, 0.5);
+}
+
+/* — Lists — */
+.post-content ul,
+.post-content ol {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+}
+
+.post-content ul {
+  list-style-type: none;
+}
+
+.post-content ul > li {
+  position: relative;
+}
+
+.post-content ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 0.65em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.post-content ol {
+  list-style-type: decimal;
+}
+
+.post-content ol > li {
+  padding-left: 0.25rem;
+}
+
+.post-content li {
+  margin: 0.35rem 0;
+}
+
+.post-content li::marker {
+  color: #6b7280;
+}
+
+.post-content li > ul,
+.post-content li > ol {
+  margin: 0.25rem 0;
+}
+
+/* — Blockquotes — */
+.post-content blockquote {
+  border-left: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  margin: 1.25rem 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.post-content blockquote p {
+  margin: 0.35rem 0;
+}
+
+.post-content blockquote strong {
+  color: #e5e7eb;
+}
+
+/* — Horizontal Rule — */
+.post-content hr {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 2rem 0;
+}
+
+/* — Images — */
 .post-content img {
   width: 100%;
   border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 1.5rem 0;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
 }
 
-.post-content blockquote {
-  border-left: 3px solid rgba(255, 255, 255, 0.2);
-  padding-left: 1rem;
-  color: #9ca3af;
+/* — Inline Code — */
+.post-content code {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e5e7eb;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.875em;
+  font-weight: 500;
 }
 
-.post-content code {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 0.15rem 0.4rem;
-  font-size: 0.95em;
+/* — Code Blocks — */
+.post-content pre {
+  background: #070b10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #d1d5db;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.post-content pre code {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  display: block;
+  font-size: 0.875em;
+  font-weight: 400;
+  padding: 1.25rem 1.5rem;
+  line-height: 1.7;
+}
+
+.post-content .shiki,
+.post-content .shiki code {
+  background: #070b10 !important;
+}
+
+.post-content .shiki .line {
+  min-height: 1.7em;
+}
+
+.post-content .shiki .line.highlight {
+  background: rgba(59, 130, 246, 0.12);
+  border-left: 2px solid #3b82f6;
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem 0 calc(1.5rem - 2px);
+}
+
+/* — Code block filename header — */
+.post-content pre + .shiki,
+.post-content .shiki + pre {
+  margin-top: 0;
+}
+
+.post-content :where(div[class*='language-']) {
+  position: relative;
+}
+
+.post-content :where(div[class*='language-']::before) {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-radius: 0 12px 0 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* — Tables — */
+.post-content div:has(> table) {
+  background: #0b1118;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.post-content table {
+  background: transparent;
+  border: 0 !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #d1d5db;
+  margin: 0;
+  min-width: 100%;
+  width: max-content;
+}
+
+.post-content thead {
+  background: rgba(17, 22, 28, 0.8);
+}
+
+.post-content thead th:first-child {
+  border-radius: 11px 0 0 0;
+}
+
+.post-content thead th:last-child {
+  border-radius: 0 11px 0 0;
+}
+
+.post-content th,
+.post-content td {
+  border: 0 !important;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.post-content th {
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.post-content td {
+  color: #d1d5db;
+  font-size: 0.9375rem;
+}
+
+.post-content tbody tr {
+  background: transparent;
+  transition: background-color 160ms ease;
+}
+
+.post-content tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.post-content tbody tr:hover {
+  background: rgba(147, 197, 253, 0.06);
+}
+
+.post-content table * {
+  border-color: transparent !important;
+}
+
+/* — Details / Accordion — */
+.post-content details {
+  background: #0b1118;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.post-content summary {
+  cursor: pointer;
+  padding: 0.875rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid transparent;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.post-content summary::-webkit-details-marker {
+  display: none;
+}
+
+.post-content summary::before {
+  content: '▸';
+  display: inline-block;
+  color: #6b7280;
+  font-size: 0.75rem;
+  transition: transform 160ms ease;
+  flex-shrink: 0;
+}
+
+.post-content details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.post-content details[open] > summary {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.post-content details > div,
+.post-content details > p {
+  padding: 1rem 1.25rem;
+}
+
+/* — Alerts / Callouts — */
+.post-content :where(.u-alert, [role='alert']) {
+  background: #0b1118;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #d1d5db;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+
+.post-content :where([data-type='info']) {
+  border-left: 2px solid #3b82f6;
+}
+
+.post-content :where([data-type='warning']) {
+  border-left: 2px solid #f59e0b;
+}
+
+.post-content :where([data-type='success']) {
+  border-left: 2px solid #00dc82;
+}
+
+.post-content :where([data-type='danger']) {
+  border-left: 2px solid #ef4444;
+}
+
+/* — Nuxt UI Component Overrides — */
+.post-content :where([class*='bg-default'], [class*='bg-muted'], [class*='bg-elevated']) {
+  background-color: #0b1118;
+}
+
+.post-content :where([class*='border-default'], [class*='border-muted']) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.post-content :where([class*='text-default'], [class*='text-muted'], [class*='text-toned']) {
+  color: #cbd5e1;
+}
+
+.post-content :where([class*='text-highlighted']) {
+  color: #ffffff;
+}
+
+.post-content :where(button, a) {
+  text-underline-offset: 4px;
+}
+
+.post-content :where(button, [role='button']) {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.post-content :where(.not-prose, [class*='rounded']) {
+  color: inherit;
+}
+
+.post-content :where([data-state='active']) {
+  color: #ffffff;
+}
+
+.post-content :where([data-state='open']) {
+  color: #ffffff;
+}
+
+.post-content :where(.divide-default > :not(:last-child)) {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 html,

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://oxc.rs/schema/config.json",
+  "indentStyle": "space",
+  "indentWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "quoteProps": "as-needed",
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "singleAttributePerLine": false,
+  "excludeFiles": ["dist/**", ".output/**", "node_modules/**", ".nuxt/**", "coverage/**"]
+}

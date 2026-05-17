@@ -8,12 +8,17 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "lint:oxlint": "oxlint",
+    "typecheck": "nuxt typecheck",
+    "fmt": "oxfmt -w .",
+    "fmt:check": "oxfmt --check .",
+    "fmt:fix": "oxfmt -w . && oxlint --fix"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.98",
     "@iconify-json/simple-icons": "^1.2.74",
     "@iconify/vue": "^5.0.0",
+    "@nuxt/content": "^3.13.0",
     "@nuxt/ui": "^4.5.1",
     "@vueuse/components": "^14.2.1",
     "@vueuse/core": "^14.2.1",
@@ -27,6 +32,7 @@
     "lodash-es": "^4.18.1",
     "nprogress": "^0.2.0",
     "nuxt": "^4.4.2",
+    "oxfmt": "^0.50.0",
     "path": "^0.12.7",
     "pinia-plugin-persistedstate": "^4.7.1",
     "tailwindcss": "^4.2.1",
