@@ -41,7 +41,7 @@ onMounted(() => {
         <span v-if="drafts.length" class="text-xs text-gray-500">{{ drafts.length }} 封</span>
       </div>
       <button
-        class="p-2 rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"
+        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"
         title="新建草稿"
         @click="router.push('/mail/compose')"
       >
