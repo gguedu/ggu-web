@@ -1,5 +1,17 @@
 <script setup>
 const route = useRoute();
+let needSlide = false;
+let slideFrom = '100%';
+const DURATION = 250;
+
+function onSlideEnter(el, done) {
+  if (!needSlide) { done(); return; }
+  needSlide = false;
+  el.animate(
+    [{ transform: `translateX(${slideFrom})` }, { transform: 'translateX(0)' }],
+    { duration: DURATION, easing: 'ease-out', fill: 'forwards' },
+  ).onfinish = done;
+}
 const isJoinDoscRoute = computed(() => route.path === '/joindosc');
 const isPostIndex = computed(() => route.path === '/post');
 const isMailRoute = computed(() => route.path.startsWith('/mail'));
@@ -24,6 +36,15 @@ const activeIndex = computed(() => {
 
 const navRef = ref(null);
 const headerRef = ref(null);
+
+const getRouteOrder = (path) => {
+  if (path === '/') return 1;
+  if (path.startsWith('/post')) return 2;
+  if (path.startsWith('/joindosc')) return 3;
+  if (path.startsWith('/mail')) return 4;
+  return 0;
+};
+
 
 const indicatorLeft = ref(0);
 const indicatorWidth = ref(0);
@@ -123,10 +144,19 @@ onUnmounted(() => {
 });
 
 watch(
-  () => route.path,
-  () => {
+  route,
+  (to, from) => {
     nextTick(updateIndicator);
+    const toIdx = getRouteOrder(to.path);
+    const fromIdx = getRouteOrder(from.path);
+    const toMail = to.path.startsWith('/mail');
+    const fromMail = from.path.startsWith('/mail');
+    if (toMail || fromMail) {
+      needSlide = true;
+      slideFrom = toMail ? '100%' : '-100%';
+    }
   },
+  { flush: 'pre' },
 );
 
 watch(targetIndex, () => {
@@ -224,7 +254,11 @@ useHead({
       </nav>
     </header>
 
-    <NuxtPage />
+    <div class="page-transition-wrapper">
+      <Transition @enter="onSlideEnter" :css="false">
+        <NuxtPage :key="route.path" class="page-view glass-page" />
+      </Transition>
+    </div>
 
     <!-- Footer -->
     <footer
@@ -254,5 +288,34 @@ body {
   padding: 0;
   background-color: black;
   font-family: 'vivo Sans', sans-serif;
+}
+
+.page-transition-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+}
+
+.page-view {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glass-page {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%);
+  backdrop-filter: blur(12px) saturate(135%);
+  -webkit-backdrop-filter: blur(12px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 24px 60px rgba(0, 0, 0, 0.16),
+    inset 0 1px 2px rgba(255, 255, 255, 0.16),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.12);
 }
 </style>
