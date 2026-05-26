@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify';
+
 const router = useRouter();
 const { selectedEmail } = useMailState();
 const mailService = useMailService();
 const toast = useToast();
+
+const sanitizedContent = computed(() => {
+  if (!email.value?.content) return '';
+  return DOMPurify.sanitize(email.value.content, {
+    ADD_TAGS: ['img'],
+    ADD_ATTR: ['target', 'loading'],
+  });
+});
 
 const email = computed(() => selectedEmail.value);
 
@@ -122,7 +132,7 @@ const goReply = () => {
 
           <!-- Body -->
           <div class="text-sm text-gray-300 leading-relaxed">
-            <div v-if="email.content" class="prose prose-invert max-w-none" v-html="email.content" />
+            <div v-if="email.content" class="prose prose-invert max-w-none" v-html="sanitizedContent" />
             <pre v-else class="whitespace-pre-wrap font-sans">{{ email.text || '(空内容)' }}</pre>
           </div>
 
