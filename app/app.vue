@@ -147,13 +147,13 @@ watch(
   route,
   (to, from) => {
     nextTick(updateIndicator);
-    const toIdx = getRouteOrder(to.path);
-    const fromIdx = getRouteOrder(from.path);
+    const toLogin = to.path === '/mail/login';
+    const fromLogin = from.path === '/mail/login';
     const toMail = to.path.startsWith('/mail');
     const fromMail = from.path.startsWith('/mail');
-    if (toMail || fromMail) {
+    if (toLogin || fromLogin || (toMail && !fromMail) || (!toMail && fromMail)) {
       needSlide = true;
-      slideFrom = toMail ? '100%' : '-100%';
+      slideFrom = toLogin || toMail ? '100%' : '-100%';
     }
   },
   { flush: 'pre' },
@@ -200,7 +200,7 @@ useHead({
 <template>
   <div
     :class="[
-      'bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-hidden',
+      'bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-x-hidden',
       isFullView ? 'h-screen' : 'min-h-screen',
     ]"
   >
@@ -294,15 +294,15 @@ body {
   position: relative;
   overflow: hidden;
   width: 100%;
-  height: 100%;
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-view {
-  position: absolute;
-  inset: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
+  flex: 1 1 auto;
 }
 
 .glass-page {

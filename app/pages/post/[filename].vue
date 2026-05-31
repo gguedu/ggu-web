@@ -94,7 +94,14 @@ const tags = computed(() => (data.value?.tags?.length ? data.value.tags : ['文�
         />
 
         <div class="post-content">
-          <ContentRenderer :value="data" />
+          <ClientOnly>
+            <ContentRenderer :value="data" />
+            <template #fallback>
+              <div class="flex items-center justify-center py-20 text-sm text-[#6b7280]">
+                正在渲染内容...
+              </div>
+            </template>
+          </ClientOnly>
         </div>
       </article>
     </section>

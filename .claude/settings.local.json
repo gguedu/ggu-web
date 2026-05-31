@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(dir /b)",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "Bash(node -e \"console.log\\(require\\('pdfjs-dist/package.json'\\).version\\)\")",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm dev *)",
+      "Bash(pnpm list *)",
+      "Bash(curl *)",
+      "Bash(node *)"
     ]
   }
 }

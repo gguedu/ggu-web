@@ -50,6 +50,12 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-01-15',
 
+  vite: {
+    optimizeDeps: {
+      include: ['pdfjs-dist'],
+    },
+  },
+
   hooks: {
     'content:file:beforeParse': ({ file }) => {
       if (file.extension === 'md') {

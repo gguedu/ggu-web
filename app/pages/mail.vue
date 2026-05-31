@@ -252,4 +252,15 @@ watch(currentAccountId, (newValue) => {
       </div>
     </main>
   </div>
+
+  <!-- 独立mail 浮窗按钮 -->
+  <a
+    href="https://mail.ggu.edu.kg"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:text-white hover:bg-white/20 hover:-translate-y-3 hover:scale-[1.02] hover:drop-shadow-[0_10px_20px_rgba(255,255,255,0.2)] transition-all duration-500 ease-out shadow-lg"
+  >
+    <Icon name="lucide:external-link" size="14" />
+    <span>前往独立mail</span>
+  </a>
 </template>
