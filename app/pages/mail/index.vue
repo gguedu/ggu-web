@@ -20,7 +20,12 @@ const formatDate = (value?: string | number) => {
   if (isToday) {
     return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
   }
-  return d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const parseRecipient = (value?: string) => {
@@ -28,7 +33,10 @@ const parseRecipient = (value?: string) => {
   try {
     const list = JSON.parse(value);
     if (Array.isArray(list)) {
-      return list.map((item) => item.address || item.email || '').filter(Boolean).join(', ');
+      return list
+        .map((item) => item.address || item.email || '')
+        .filter(Boolean)
+        .join(', ');
     }
   } catch {
     return value;
@@ -172,7 +180,9 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex-1 flex flex-col min-h-0">
     <!-- List header -->
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0">
+    <div
+      class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0"
+    >
       <div class="flex items-center gap-3">
         <h2 class="text-base font-semibold text-gray-200">收件箱</h2>
         <span v-if="emails.length" class="text-xs text-gray-500">{{ emails.length }} 封</span>
@@ -183,7 +193,10 @@ onBeforeUnmount(() => {
           title="排序"
           @click="toggleSort"
         >
-          <Icon :name="timeSort === 0 ? 'lucide:arrow-down-narrow-wide' : 'lucide:arrow-up-wide-narrow'" size="16" />
+          <Icon
+            :name="timeSort === 0 ? 'lucide:arrow-down-narrow-wide' : 'lucide:arrow-up-wide-narrow'"
+            size="16"
+          />
         </button>
         <button
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"
@@ -222,10 +235,7 @@ onBeforeUnmount(() => {
         >
           <!-- Unread dot -->
           <div class="pt-2 shrink-0 w-4 flex justify-center">
-            <div
-              v-if="email.unread !== 1"
-              class="w-2 h-2 rounded-full bg-blue-400"
-            />
+            <div v-if="email.unread !== 1" class="w-2 h-2 rounded-full bg-blue-400" />
           </div>
 
           <!-- Content -->
@@ -237,7 +247,9 @@ onBeforeUnmount(() => {
               >
                 {{ email.name || email.sendEmail || '未知发件人' }}
               </span>
-              <span class="text-[11px] text-gray-600 shrink-0">{{ formatDate(email.createTime) }}</span>
+              <span class="text-[11px] text-gray-600 shrink-0">{{
+                formatDate(email.createTime)
+              }}</span>
             </div>
             <div
               class="text-sm truncate mb-0.5"
@@ -251,7 +263,9 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Actions -->
-          <div class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5">
+          <div
+            class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5"
+          >
             <button
               class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white/[0.08] transition-colors"
               :class="email.isStar ? 'text-yellow-400' : 'text-gray-500 hover:text-gray-300'"

@@ -156,32 +156,42 @@ watch(mode, () => {
 </script>
 
 <template>
-  <div class="h-screen bg-black text-white flex items-center justify-center px-4 py-6 overflow-hidden relative">
+  <div
+    class="h-screen bg-black text-white flex items-center justify-center px-4 py-6 overflow-hidden relative"
+  >
     <!-- Ambient light orbs -->
     <div
       class="pointer-events-none absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full opacity-60"
-      style="background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)"
+      style="background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 70%)"
     />
     <div
       class="pointer-events-none absolute top-1/2 -left-48 w-[500px] h-[500px] rounded-full opacity-50"
-      style="background: radial-gradient(circle, rgba(0,148,255,0.12), transparent 70%)"
+      style="background: radial-gradient(circle, rgba(0, 148, 255, 0.12), transparent 70%)"
     />
     <div
       class="pointer-events-none absolute -bottom-24 right-1/4 w-[400px] h-[400px] rounded-full"
-      style="background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.6) 100%)"
+      style="background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.6) 100%)"
     />
 
     <!-- Main card -->
     <div
       class="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1fr_440px] rounded-3xl overflow-hidden"
-      style="border: 1px solid rgba(255,255,255,0.1); background: rgba(17,22,28,0.9); backdrop-filter: blur(24px); box-shadow: 0 18px 36px rgba(0,0,0,0.35)"
+      style="
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(17, 22, 28, 0.9);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.35);
+      "
     >
       <!-- Left: Brand panel -->
-      <section class="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden" style="border-right: 1px solid rgba(255,255,255,0.06)">
+      <section
+        class="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
+        style="border-right: 1px solid rgba(255, 255, 255, 0.06)"
+      >
         <!-- Inner orb -->
         <div
           class="pointer-events-none absolute top-0 right-0 w-[320px] h-[320px] rounded-full"
-          style="background: radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%)"
+          style="background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 70%)"
         />
 
         <div class="relative z-10">
@@ -236,14 +246,14 @@ watch(mode, () => {
         <div
           v-if="allowRegister"
           class="flex mb-7 rounded-lg p-1"
-          style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06)"
+          style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.06)"
         >
           <button
             type="button"
             class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300"
-            :class="mode === 'login'
-              ? 'bg-white/10 text-white'
-              : 'text-gray-500 hover:text-gray-300'"
+            :class="
+              mode === 'login' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
+            "
             @click="mode = 'login'"
           >
             登录
@@ -251,9 +261,9 @@ watch(mode, () => {
           <button
             type="button"
             class="flex-1 py-2 text-sm font-medium rounded-md transition-all duration-300"
-            :class="mode === 'register'
-              ? 'bg-white/10 text-white'
-              : 'text-gray-500 hover:text-gray-300'"
+            :class="
+              mode === 'register' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'
+            "
             @click="mode = 'register'"
           >
             注册
@@ -389,7 +399,7 @@ watch(mode, () => {
             <div
               v-if="errorMsg"
               class="flex items-start gap-2.5 p-3 rounded-lg"
-              style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25)"
+              style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25)"
             >
               <Icon name="lucide:alert-circle" size="16" class="text-red-400 shrink-0 mt-0.5" />
               <span class="text-sm text-red-300">{{ errorMsg }}</span>

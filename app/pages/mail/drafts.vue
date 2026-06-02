@@ -18,7 +18,12 @@ const formatDate = (timestamp: number) => {
   if (isToday) {
     return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
   }
-  return d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const handleRemoveDraft = (draftId: string) => {
@@ -35,7 +40,9 @@ onMounted(() => {
 <template>
   <div class="flex-1 flex flex-col min-h-0">
     <!-- List header -->
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0">
+    <div
+      class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0"
+    >
       <div class="flex items-center gap-3">
         <h2 class="text-base font-semibold text-gray-200">草稿箱</h2>
         <span v-if="drafts.length" class="text-xs text-gray-500">{{ drafts.length }} 封</span>
@@ -83,7 +90,9 @@ onMounted(() => {
           </div>
 
           <!-- Actions -->
-          <div class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5">
+          <div
+            class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5"
+          >
             <button
               class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white/[0.08] text-gray-500 hover:text-red-400 transition-colors"
               @click.stop="handleRemoveDraft(item.draftId)"

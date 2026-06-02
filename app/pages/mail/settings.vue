@@ -182,7 +182,9 @@ const deleteAccount = async () => {
         </template>
 
         <template v-else>
-          <p class="text-sm text-gray-400 mb-2">请输入 <span class="text-red-400 font-medium">确认注销</span> 以继续：</p>
+          <p class="text-sm text-gray-400 mb-2">
+            请输入 <span class="text-red-400 font-medium">确认注销</span> 以继续：
+          </p>
           <input
             v-model="deleteConfirmText"
             class="w-full bg-transparent border border-white/[0.12] rounded-md px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-red-500/50 transition-colors mb-3"
@@ -199,7 +201,10 @@ const deleteAccount = async () => {
             </button>
             <button
               class="px-4 py-2 rounded-md hover:bg-white/[0.06] text-sm text-gray-400 transition-colors"
-              @click="showDeleteConfirm = false; deleteConfirmText = ''"
+              @click="
+                showDeleteConfirm = false;
+                deleteConfirmText = '';
+              "
             >
               取消
             </button>

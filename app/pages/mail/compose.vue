@@ -129,7 +129,9 @@ onMounted(() => {
 <template>
   <div class="flex-1 flex flex-col min-h-0">
     <!-- Header -->
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0">
+    <div
+      class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0"
+    >
       <div class="flex items-center gap-3">
         <button
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"

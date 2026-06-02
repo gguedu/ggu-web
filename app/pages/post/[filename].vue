@@ -63,7 +63,9 @@ const tags = computed(() => (data.value?.tags?.length ? data.value.tags : ['æ–‡å
       <article v-else-if="data" class="flex flex-col gap-8">
         <header class="flex flex-col gap-5">
           <p class="text-xs font-medium uppercase tracking-[0.4em] text-[#6b7280]">GGU Post</p>
-          <h1 class="font-custom text-3xl font-semibold leading-tight tracking-[0.05em] text-white md:text-4xl">
+          <h1
+            class="font-custom text-3xl font-semibold leading-tight tracking-[0.05em] text-white md:text-4xl"
+          >
             {{ data.title }}
           </h1>
           <div class="flex items-center gap-3 text-sm text-[#6b7280]">

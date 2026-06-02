@@ -118,7 +118,9 @@
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
   text-decoration-color: rgba(147, 197, 253, 0.3);
-  transition: color 160ms ease, text-decoration-color 160ms ease;
+  transition:
+    color 160ms ease,
+    text-decoration-color 160ms ease;
 }
 
 .post-content a:hover {
@@ -376,7 +378,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 
 .post-content summary::-webkit-details-marker {

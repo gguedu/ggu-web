@@ -18,7 +18,12 @@ const formatDate = (value?: string | number) => {
   if (isToday) {
     return d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
   }
-  return d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 const loadSent = async () => {
@@ -92,7 +97,9 @@ watch(
 <template>
   <div class="flex-1 flex flex-col min-h-0">
     <!-- List header -->
-    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0">
+    <div
+      class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06] shrink-0"
+    >
       <div class="flex items-center gap-3">
         <h2 class="text-base font-semibold text-gray-200">已发送</h2>
         <span v-if="emails.length" class="text-xs text-gray-500">{{ emails.length }} 封</span>
@@ -103,7 +110,10 @@ watch(
           title="排序"
           @click="toggleSort"
         >
-          <Icon :name="timeSort === 0 ? 'lucide:arrow-down-narrow-wide' : 'lucide:arrow-up-wide-narrow'" size="16" />
+          <Icon
+            :name="timeSort === 0 ? 'lucide:arrow-down-narrow-wide' : 'lucide:arrow-up-wide-narrow'"
+            size="16"
+          />
         </button>
         <button
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"
@@ -149,7 +159,9 @@ watch(
               <span class="text-sm text-gray-400 truncate">
                 {{ item.sendEmail || '-' }}
               </span>
-              <span class="text-[11px] text-gray-600 shrink-0">{{ formatDate(item.createTime) }}</span>
+              <span class="text-[11px] text-gray-600 shrink-0">{{
+                formatDate(item.createTime)
+              }}</span>
             </div>
             <div class="text-sm text-gray-200 truncate font-medium">
               {{ item.subject || '(无主题)' }}
@@ -157,7 +169,9 @@ watch(
           </div>
 
           <!-- Actions -->
-          <div class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5">
+          <div
+            class="shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity pt-0.5"
+          >
             <button
               class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white/[0.08] transition-colors"
               :class="item.isStar ? 'text-yellow-400' : 'text-gray-500 hover:text-gray-300'"

@@ -125,11 +125,7 @@ watch(currentAccountId, (newValue) => {
 
   <div v-else class="h-full flex relative isolate overflow-hidden">
     <!-- Mobile overlay -->
-    <div
-      v-if="showAside"
-      class="fixed inset-0 bg-black/50 z-40 md:hidden"
-      @click="closeAside"
-    />
+    <div v-if="showAside" class="fixed inset-0 bg-black/50 z-40 md:hidden" @click="closeAside" />
 
     <!-- Sidebar -->
     <aside
@@ -232,11 +228,10 @@ watch(currentAccountId, (newValue) => {
     <!-- Main content -->
     <main class="flex-1 min-w-0 bg-black/35 backdrop-blur-sm flex flex-col min-h-0">
       <!-- Mobile top bar -->
-      <div class="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
-        <button
-          class="text-gray-400 hover:text-white transition-colors"
-          @click="showAside = true"
-        >
+      <div
+        class="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0"
+      >
+        <button class="text-gray-400 hover:text-white transition-colors" @click="showAside = true">
           <Icon name="lucide:menu" size="20" />
         </button>
         <NuxtLink
