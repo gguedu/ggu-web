@@ -198,12 +198,15 @@ watch(mode, () => {
           <p class="text-xs font-medium tracking-[0.4em] uppercase text-gray-500 mb-6">
             Galaxy Global University
           </p>
-          <h1
-            class="font-custom text-5xl leading-[1.15] tracking-[0.08em] text-white"
-            style="text-shadow: 0 4px 50px rgba(255, 255, 255, 0.15)"
-          >
-            星河邮箱
-          </h1>
+          <div class="flex items-center gap-4 mb-2">
+            <Icon name="lucide:mail" size="36" class="text-white/70" />
+            <h1
+              class="font-custom text-5xl leading-[1.15] tracking-[0.08em] text-white"
+              style="text-shadow: 0 4px 50px rgba(255, 255, 255, 0.15)"
+            >
+              星河邮箱
+            </h1>
+          </div>
           <p class="mt-6 text-lg leading-[1.6] text-gray-400 max-w-sm">
             统一身份账号登录，访问教学通知、校内协同与事务邮件。
           </p>
