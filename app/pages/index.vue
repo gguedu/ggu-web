@@ -2,13 +2,20 @@
 import { Motion } from 'motion-v';
 
 const title = '星河环球大学'.split('');
+const isLoaded = ref(false);
+
+onMounted(() => {
+  requestAnimationFrame(() => {
+    isLoaded.value = true;
+  });
+});
 </script>
 
 <template>
   <main
     class="flex-grow flex flex-col items-center justify-center text-center px-4 relative z-10 w-full pt-16 pb-8 md:pt-20 md:pb-10 overflow-hidden"
   >
-    <div class="relative z-10 w-full max-w-5xl">
+    <div class="relative z-10 w-full max-w-5xl mx-auto">
       <!-- 微弱背景动态层 -->
       <Motion
         class="absolute inset-0 pointer-events-none"
@@ -26,34 +33,27 @@ const title = '星河环球大学'.split('');
         />
       </Motion>
 
-      <!-- Hero主体 -->
-
       <!-- 品牌标签 -->
-      <Motion
-        :initial="{
-          opacity: 0,
-          width: 0,
-        }"
-        :animate="{
-          opacity: 1,
-          width: 'fit-content',
-        }"
-        :transition="{
-          duration: 0.8,
-        }"
-        class="overflow-hidden mx-auto mb-6 md:mb-10"
+      <div
+        class="mb-8 md:mb-10 transition-all duration-700 ease-out"
+        :class="isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
       >
         <span
-          class="inline-block whitespace-nowrap text-[10px] md:text-[12px] tracking-[0.3em] md:tracking-[0.4em] uppercase border border-white/[0.08] rounded-full px-4 py-1.5 md:px-5 md:py-2 text-gray-400"
+          class="inline-block text-[12px] font-medium tracking-[0.4em] uppercase text-gray-500 border border-white/[0.08] rounded-full px-5 py-1.5"
         >
           Galaxy Global University
         </span>
-      </Motion>
+      </div>
 
-      <!-- 标题逐字 -->
-      <div class="mb-5 md:mb-8">
+      <!-- 标题逐字 + hover 效果 -->
+      <div
+        class="inline-block hover:-translate-y-3 hover:scale-[1.02] hover:drop-shadow-[0_10px_20px_rgba(255,255,255,0.2)] transition-all duration-500 ease-out cursor-default mb-6 md:mb-8 group"
+        :class="isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+        :style="{ transitionDelay: isLoaded ? '150ms' : '0ms' }"
+      >
         <h1
-          class="text-[3rem] md:text-[4rem] lg:text-[6rem] font-bold text-white tracking-[.12em] font-custom"
+          class="text-[3rem] md:text-[3.5rem] lg:text-[5.8rem] font-bold tracking-[0.1em] group-hover:tracking-[0.15em] transition-all duration-500 mb-4 text-white font-custom"
+          style="text-shadow: 0 4px 50px rgba(255, 255, 255, 0.15)"
         >
           <Motion
             v-for="(char, index) in title"
@@ -82,95 +82,43 @@ const title = '星河环球大学'.split('');
       </div>
 
       <!-- 副标题 -->
-      <Motion
-        :initial="{
-          opacity: 0,
-          filter: 'blur(20px)',
-        }"
-        :animate="{
-          opacity: 1,
-          filter: 'blur(0px)',
-        }"
-        :transition="{
-          delay: 1.1,
-        }"
+      <p
+        class="text-base md:text-xl tracking-[0.3em] font-light text-gray-400 uppercase font-custom mb-6 md:mb-8 transition-all duration-700 ease-out"
+        :class="isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+        :style="{ transitionDelay: isLoaded ? '300ms' : '0ms' }"
       >
-        <p
-          class="text-sm md:text-xl tracking-[0.2em] md:tracking-[0.35em] text-gray-400 uppercase mb-6 md:mb-10"
-        >
-          Galaxy Global University
-        </p>
-      </Motion>
+        Galaxy Global University
+      </p>
 
-      <!-- CTA -->
-      <Motion
-        class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center"
-        :initial="{ opacity: 0 }"
-        :animate="{ opacity: 1 }"
-        :transition="{
-          delay: 1.3,
-          staggerChildren: 0.15,
-        }"
+      <!-- 按钮 -->
+      <div
+        class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-base md:text-lg font-bold tracking-wider transition-all duration-700 ease-out"
+        :class="isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+        :style="{ transitionDelay: isLoaded ? '400ms' : '0ms' }"
       >
-        <Motion
-          class="w-full sm:w-auto"
-          :initial="{
-            y: 50,
-            opacity: 0,
-          }"
-          :animate="{
-            y: 0,
-            opacity: 1,
-          }"
-          while-hover="hover"
-          while-tap="{scale:.97}"
-          :variants="{
-            hover: {
-              y: -6,
-            },
-          }"
+        <NuxtLink
+          to="/joindosc"
+          class="group w-full sm:w-auto px-10 py-3.5 bg-white text-black border border-white rounded-md hover:bg-gray-200 hover:border-gray-200 transition-all duration-300 inline-flex items-center justify-center gap-2 text-center cursor-pointer hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_30px_rgba(255,255,255,0.2)]"
         >
-          <NuxtLink
-            to="/joindosc"
-            class="group block w-full sm:w-auto text-center px-8 py-3 md:px-10 md:py-4 rounded-xl bg-white text-black relative overflow-hidden"
-          >
-            <Motion
-              class="absolute inset-0 bg-black/5"
-              :initial="{ x: '-100%' }"
-              while-hover="{x:'100%'}"
-              :transition="{ duration: 0.8 }"
-            />
-
-            <span class="relative z-10"> 申请入学 </span>
-          </NuxtLink>
-        </Motion>
-
-        <Motion
-          class="w-full sm:w-auto"
-          :initial="{
-            y: 50,
-            opacity: 0,
-          }"
-          :animate="{
-            y: 0,
-            opacity: 1,
-          }"
-          while-hover="hover"
-          while-tap="{scale:.97}"
-          :variants="{
-            hover: {
-              y: -6,
-            },
-          }"
+          <span>申请入学</span>
+          <Icon
+            name="lucide:arrow-right"
+            size="18"
+            class="transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </NuxtLink>
+        <NuxtLink
+          to="/post"
+          class="group w-full sm:w-auto px-10 py-3.5 bg-transparent text-white border border-white/30 rounded-md hover:bg-white/10 hover:border-white/50 transition-all duration-300 inline-flex items-center justify-center gap-2 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
         >
-          <NuxtLink
-            to="/post"
-            class="block w-full sm:w-auto text-center px-8 py-3 md:px-10 md:py-4 rounded-xl border border-white/20 bg-white/[0.02] backdrop-blur-md"
-          >
-            星河文库
-          </NuxtLink>
-        </Motion>
-      </Motion>
+          <span>星河文库</span>
+          <Icon
+            name="lucide:book-open"
+            size="18"
+            class="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
+        </NuxtLink>
+      </div>
     </div>
   </main>
 </template>

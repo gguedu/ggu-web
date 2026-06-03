@@ -52,7 +52,7 @@ export default defineNuxtConfig({
 
   vite: {
     optimizeDeps: {
-      include: ['pdfjs-dist', 'motion'],
+      include: ['pdfjs-dist', 'motion-v'],
     },
   },
 
