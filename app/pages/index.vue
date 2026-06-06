@@ -119,6 +119,56 @@ onMounted(() => {
           />
         </NuxtLink>
       </div>
+
+      <!-- QQ 群聊按钮 -->
+      <div
+        class="mt-6 flex justify-center transition-all duration-700 ease-out"
+        :class="isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'"
+        :style="{ transitionDelay: isLoaded ? '500ms' : '0ms' }"
+      >
+        <a
+          href="https://qm.qq.com/q/5WX4p1rqTK"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="qq-btn group inline-flex items-center gap-2 px-5 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
+        >
+          <Icon
+            name="simple-icons:tencentqq"
+            size="16"
+            class="text-purple-400"
+          />
+          <span class="qq-btn-text">
+            立刻加入GGU校友会群聊！
+          </span>
+        </a>
+      </div>
     </div>
   </main>
 </template>
+
+<style scoped>
+.qq-btn {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(90deg, #f43f5e, #a855f7, #3b82f6, #10b981, #f43f5e) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: slide-gradient 5s linear infinite;
+}
+
+.qq-btn-text {
+  background: linear-gradient(90deg, #f43f5e, #a855f7, #3b82f6, #10b981, #f43f5e);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: slide-gradient 5s linear infinite;
+}
+
+@keyframes slide-gradient {
+  to {
+    background-position: 0 0, -300% 0;
+  }
+}
+
+</style>
