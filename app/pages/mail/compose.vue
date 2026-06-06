@@ -27,10 +27,20 @@ const loadDraft = () => {
   content.value = draft.content
 }
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+
 const chooseFiles = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (!input.files) return
-  files.value = [...files.value, ...Array.from(input.files)]
+  const validFiles: File[] = []
+  for (const file of Array.from(input.files)) {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.add({ title: `文件 ${file.name} 超过 10MB 限制`, color: 'warning' })
+      continue
+    }
+    validFiles.push(file)
+  }
+  files.value = [...files.value, ...validFiles]
   input.value = ''
 }
 

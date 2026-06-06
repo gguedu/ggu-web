@@ -64,6 +64,17 @@ const goReply = () => {
   if (!email.value) return
   navigateTo(`/mail/compose?replyTo=${email.value.emailId}`)
 }
+
+const safeUrl = (url?: string) => {
+  if (!url) return '#'
+  try {
+    const { protocol } = new URL(url)
+    if (protocol === 'http:' || protocol === 'https:') return url
+  } catch {
+    if (url.startsWith('/')) return url
+  }
+  return '#'
+}
 </script>
 
 <template>
@@ -200,8 +211,9 @@ const goReply = () => {
                 <a
                   v-if="att.key"
                   class="text-xs text-blue-400 hover:text-blue-300 ml-3 shrink-0 transition-colors"
-                  :href="att.key"
+                  :href="safeUrl(att.key)"
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   下载
                 </a>
