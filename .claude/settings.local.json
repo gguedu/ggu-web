@@ -10,7 +10,11 @@
       "Bash(curl *)",
       "Bash(node *)",
       "PowerShell(Get-Process *)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm dev *)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" pnpm dev *)",
+      "Bash(pnpm run *)",
+      "Bash(npx eslint *)",
+      "Bash(npx nuxi *)",
+      "PowerShell(npx nuxi typecheck; Write-Host \"EXIT_CODE=$LASTEXITCODE\")"
     ]
   }
 }

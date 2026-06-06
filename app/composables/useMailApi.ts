@@ -1,83 +1,84 @@
-import type { MailApiEnvelope } from '~/types/mail';
+import type { MailApiEnvelope } from '~/types/mail'
 
 interface MailApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  params?: Record<string, unknown>;
-  body?: Record<string, unknown> | BodyInit | null;
-  headers?: Record<string, string>;
-  timeout?: number;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
+  params?: Record<string, unknown>
+  body?: Record<string, unknown> | BodyInit | null
+  headers?: Record<string, string>
+  timeout?: number
 }
 
 export const useMailApi = () => {
-  const runtime = useRuntimeConfig();
-  const { token, clearSession } = useMailState();
+  const runtime = useRuntimeConfig()
+  const { token, clearSession } = useMailState()
   const configuredBaseURL = (runtime.public.mailApiBaseUrl || 'http://127.0.0.1:8787/api').replace(
     /\/$/,
-    '',
-  );
+    ''
+  )
   const baseURL = configuredBaseURL.endsWith('/api')
     ? configuredBaseURL
-    : `${configuredBaseURL}/api`;
+    : `${configuredBaseURL}/api`
 
   const request = async <T>(path: string, options: MailApiOptions = {}): Promise<T> => {
     const query = options.params
       ? new URLSearchParams(
           Object.entries(options.params)
             .filter(([, value]) => value !== undefined && value !== null)
-            .map(([key, value]) => [key, String(value)]),
+            .map(([key, value]) => [key, String(value)])
         )
-      : null;
+      : null
 
-    const target = query && query.toString() ? `${path}?${query.toString()}` : path;
+    const target = query && query.toString() ? `${path}?${query.toString()}` : path
 
     const headers: Record<string, string> = {
-      ...options.headers,
-    };
-    if (token.value) {
-      headers.Authorization = token.value;
+      ...options.headers
     }
-    const language = import.meta.client ? navigator.language.split('-')[0] || 'zh' : 'zh';
-    headers['accept-language'] = headers['accept-language'] || language;
+    if (token.value) {
+      headers.Authorization = token.value
+    }
+    const language = import.meta.client ? navigator.language.split('-')[0] || 'zh' : 'zh'
+    headers['accept-language'] = headers['accept-language'] || language
 
-    let payload: MailApiEnvelope<T> | T;
+    let payload: MailApiEnvelope<T> | T
     try {
       payload = await $fetch<MailApiEnvelope<T> | T>(target, {
         baseURL,
         method: options.method || 'GET',
         body: options.body,
         headers,
-        timeout: options.timeout,
-      });
-    } catch (error: any) {
-      const statusCode = error?.statusCode || error?.response?.status;
-      const data = error?.data;
+        timeout: options.timeout
+      })
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown> | undefined
+      const statusCode = (err?.statusCode as number) || (err?.response as Record<string, unknown>)?.status as number
+      const data = err?.data as Record<string, unknown> | undefined
 
       if (statusCode === 401 || data?.code === 401) {
-        clearSession();
+        clearSession()
         if (import.meta.client) {
-          await navigateTo('/mail/login');
+          await navigateTo('/mail/login')
         }
       }
 
-      throw new Error(data?.message || error?.message || 'Mail API error');
+      throw new Error((data?.message as string) || (err?.message as string) || 'Mail API error')
     }
 
     if (payload && typeof payload === 'object' && 'code' in payload) {
-      const envelope = payload as MailApiEnvelope<T>;
+      const envelope = payload as MailApiEnvelope<T>
       if (envelope.code === 200) {
-        return envelope.data;
+        return envelope.data
       }
       if (envelope.code === 401) {
-        clearSession();
+        clearSession()
         if (import.meta.client) {
-          await navigateTo('/mail/login');
+          await navigateTo('/mail/login')
         }
       }
-      throw new Error(envelope.message || 'Mail API error');
+      throw new Error(envelope.message || 'Mail API error')
     }
 
-    return payload as T;
-  };
+    return payload as T
+  }
 
-  return { request };
-};
+  return { request }
+}

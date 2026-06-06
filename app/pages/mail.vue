@@ -1,131 +1,137 @@
 <script setup lang="ts">
 definePageMeta({
-  middleware: 'mail-auth',
-});
+  middleware: 'mail-auth'
+})
 
-const route = useRoute();
-const router = useRouter();
-const showAside = ref(false);
-const showAccountMenu = ref(false);
-let accountMenuTimer: ReturnType<typeof setTimeout> | null = null;
+const route = useRoute()
+const showAside = ref(false)
+const showAccountMenu = ref(false)
+let accountMenuTimer: ReturnType<typeof setTimeout> | null = null
 
 const handleMenuEnter = () => {
-  if (accountMenuTimer) clearTimeout(accountMenuTimer);
-  showAccountMenu.value = true;
-};
+  if (accountMenuTimer) clearTimeout(accountMenuTimer)
+  showAccountMenu.value = true
+}
 
 const handleMenuLeave = () => {
   accountMenuTimer = setTimeout(() => {
-    showAccountMenu.value = false;
-  }, 100);
-};
+    showAccountMenu.value = false
+  }, 100)
+}
 
-const loading = ref(false);
-const isLoginRoute = computed(() => route.path === '/mail/login');
+const loading = ref(false)
+const isLoginRoute = computed(() => route.path === '/mail/login')
 
 const menuItems = [
   { id: 'inbox', label: '收件箱', icon: 'lucide:inbox', path: '/mail' },
   { id: 'sent', label: '已发送', icon: 'lucide:send', path: '/mail/sent' },
   { id: 'drafts', label: '草稿箱', icon: 'lucide:file-text', path: '/mail/drafts' },
   { id: 'starred', label: '星标邮件', icon: 'lucide:star', path: '/mail/starred' },
-  { id: 'settings', label: '设置', icon: 'lucide:settings', path: '/mail/settings' },
-];
+  { id: 'settings', label: '设置', icon: 'lucide:settings', path: '/mail/settings' }
+]
 
-const { config, user, accounts, currentAccountId, currentAccount, clearSession } = useMailState();
-const mailService = useMailService();
+const { config, user, accounts, currentAccountId, currentAccount, clearSession } = useMailState()
+const mailService = useMailService()
 
 const closeAside = () => {
-  showAside.value = false;
-};
+  showAside.value = false
+}
 
 const loadBaseData = async () => {
   if (loading.value) {
-    return;
+    return
   }
-  loading.value = true;
+  loading.value = true
   try {
-    user.value = await mailService.loginUserInfo();
-    config.value = await mailService.websiteConfig();
-    const accountList = await mailService.accountList(0, 100);
-    accounts.value = accountList;
+    user.value = await mailService.loginUserInfo()
+    config.value = await mailService.websiteConfig()
+    const accountList = await mailService.accountList(0, 100)
+    accounts.value = accountList
     if (!currentAccountId.value && accounts.value.length > 0) {
-      currentAccountId.value = accounts.value[0]?.accountId || null;
+      currentAccountId.value = accounts.value[0]?.accountId || null
     }
   } catch (error) {
-    console.error(error);
+    console.error(error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 const logout = async () => {
   try {
-    await mailService.logout();
+    await mailService.logout()
   } catch {
     // Ignore logout request failures and clear local session anyway.
   }
-  clearSession();
-  await navigateTo('/mail/login');
-};
+  clearSession()
+  await navigateTo('/mail/login')
+}
 
 const isActive = (path: string) => {
   if (path === '/mail') {
-    return route.path === '/mail' || route.path === '/mail/inbox';
+    return route.path === '/mail' || route.path === '/mail/inbox'
   }
-  return route.path === path;
-};
+  return route.path === path
+}
 
 onMounted(() => {
   if (!isLoginRoute.value) {
-    loadBaseData();
+    loadBaseData()
   }
-});
+})
 
 watch(isLoginRoute, (value) => {
   if (!value) {
-    loadBaseData();
+    loadBaseData()
   }
-});
+})
 
-const gravatarUrl = ref('');
+const gravatarUrl = ref('')
 
 watch(
   () => currentAccount.value?.email,
   async (email) => {
     if (email && import.meta.client) {
       try {
-        const msgUint8 = new TextEncoder().encode(email.trim().toLowerCase());
-        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-        gravatarUrl.value = `https://gravatar.com/avatar/${hashHex}?d=mp`;
+        const msgUint8 = new TextEncoder().encode(email.trim().toLowerCase())
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+        const hashArray = Array.from(new Uint8Array(hashBuffer))
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+        gravatarUrl.value = `https://gravatar.com/avatar/${hashHex}?d=mp`
       } catch {
-        gravatarUrl.value = '';
+        gravatarUrl.value = ''
       }
     } else {
-      gravatarUrl.value = '';
+      gravatarUrl.value = ''
     }
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 watch(currentAccountId, (newValue) => {
   if (!newValue) {
-    return;
+    return
   }
-  const exists = accounts.value.some((item) => item.accountId === newValue);
+  const exists = accounts.value.some(item => item.accountId === newValue)
   if (!exists && accounts.value.length > 0) {
-    currentAccountId.value = accounts.value[0]?.accountId || null;
+    currentAccountId.value = accounts.value[0]?.accountId || null
   }
-});
+})
 </script>
 
 <template>
   <NuxtPage v-if="isLoginRoute" />
 
-  <div v-else class="h-full flex relative isolate overflow-hidden">
+  <div
+    v-else
+    class="h-full flex relative isolate overflow-hidden"
+  >
     <!-- Mobile overlay -->
-    <div v-if="showAside" class="fixed inset-0 bg-black/50 z-40 md:hidden" @click="closeAside" />
+    <div
+      v-if="showAside"
+      class="fixed inset-0 bg-black/50 z-40 md:hidden"
+      @click="closeAside"
+    />
 
     <!-- Sidebar -->
     <aside
@@ -138,7 +144,10 @@ watch(currentAccountId, (newValue) => {
           class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm text-gray-500 hover:text-gray-300 hover:bg-white/[0.04] mb-2"
           @click="closeAside"
         >
-          <Icon name="lucide:arrow-left" size="16" />
+          <Icon
+            name="lucide:arrow-left"
+            size="16"
+          />
           <span>返回主站</span>
         </NuxtLink>
 
@@ -154,7 +163,10 @@ watch(currentAccountId, (newValue) => {
           "
           @click="closeAside"
         >
-          <Icon :name="item.icon" size="18" />
+          <Icon
+            :name="item.icon"
+            size="18"
+          />
           <span>{{ item.label }}</span>
         </NuxtLink>
 
@@ -163,7 +175,10 @@ watch(currentAccountId, (newValue) => {
           class="mt-4 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors text-sm font-medium"
           @click="closeAside"
         >
-          <Icon name="lucide:pen-square" size="16" />
+          <Icon
+            name="lucide:pen-square"
+            size="16"
+          />
           <span>写邮件</span>
         </NuxtLink>
       </nav>
@@ -191,7 +206,10 @@ watch(currentAccountId, (newValue) => {
                 class="w-full flex items-center justify-center gap-2 px-2 py-3 text-red-500 hover:bg-[#2c2c2e] rounded-xl transition-colors font-medium"
                 @click="logout"
               >
-                <Icon name="lucide:log-out" size="18" />
+                <Icon
+                  name="lucide:log-out"
+                  size="18"
+                />
                 <span>退出登录</span>
               </button>
             </div>
@@ -206,7 +224,7 @@ watch(currentAccountId, (newValue) => {
             :src="gravatarUrl"
             alt="Avatar"
             class="w-8 h-8 rounded-full bg-[#1a1a1c] shrink-0 object-cover"
-          />
+          >
           <div
             v-else
             class="w-8 h-8 rounded-full bg-[#1a1a1c] flex items-center justify-center text-white shrink-0 text-sm font-medium"
@@ -231,14 +249,23 @@ watch(currentAccountId, (newValue) => {
       <div
         class="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0"
       >
-        <button class="text-gray-400 hover:text-white transition-colors" @click="showAside = true">
-          <Icon name="lucide:menu" size="20" />
+        <button
+          class="text-gray-400 hover:text-white transition-colors"
+          @click="showAside = true"
+        >
+          <Icon
+            name="lucide:menu"
+            size="20"
+          />
         </button>
         <NuxtLink
           to="/mail/compose"
           class="flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
         >
-          <Icon name="lucide:pen-square" size="16" />
+          <Icon
+            name="lucide:pen-square"
+            size="16"
+          />
           <span>写邮件</span>
         </NuxtLink>
       </div>
@@ -246,16 +273,19 @@ watch(currentAccountId, (newValue) => {
         <NuxtPage />
       </div>
     </main>
-  </div>
 
-  <!-- 独立mail 浮窗按钮 -->
-  <a
-    href="https://mail.ggu.edu.kg"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:text-white hover:bg-white/20 hover:-translate-y-3 hover:scale-[1.02] hover:drop-shadow-[0_10px_20px_rgba(255,255,255,0.2)] transition-all duration-500 ease-out shadow-lg"
-  >
-    <Icon name="lucide:external-link" size="14" />
-    <span>前往独立mail</span>
-  </a>
+    <!-- 独立mail 浮窗按钮 -->
+    <a
+      href="https://mail.ggu.edu.kg"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sm text-gray-300 hover:text-white hover:bg-white/20 hover:-translate-y-3 hover:scale-[1.02] hover:drop-shadow-[0_10px_20px_rgba(255,255,255,0.2)] transition-all duration-500 ease-out shadow-lg"
+    >
+      <Icon
+        name="lucide:external-link"
+        size="14"
+      />
+      <span>前往独立mail</span>
+    </a>
+  </div>
 </template>

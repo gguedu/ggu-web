@@ -1,207 +1,200 @@
 <script setup>
-const route = useRoute();
-let needSlide = false;
-let slideFrom = '100%';
-const DURATION = 250;
+const route = useRoute()
+let needSlide = false
+let slideFrom = '100%'
+const DURATION = 250
 
 function onSlideEnter(el, done) {
-  if (!needSlide) { done(); return; }
-  needSlide = false;
+  if (!needSlide) {
+    done()
+    return
+  }
+  needSlide = false
   el.animate(
     [{ transform: `translateX(${slideFrom})` }, { transform: 'translateX(0)' }],
-    { duration: DURATION, easing: 'ease-out', fill: 'forwards' },
-  ).onfinish = done;
+    { duration: DURATION, easing: 'ease-out', fill: 'forwards' }
+  ).onfinish = done
 }
-const isJoinDoscRoute = computed(() => route.path === '/joindosc');
-const isPostIndex = computed(() => route.path === '/post');
-const isMailRoute = computed(() => route.path.startsWith('/mail'));
-const isFullView = computed(() => isJoinDoscRoute.value || isPostIndex.value || isMailRoute.value);
-const bodyClass = computed(() => (isPostIndex.value ? 'no-scroll' : ''));
+const isJoinDoscRoute = computed(() => route.path === '/joindosc')
+const isPostIndex = computed(() => route.path === '/post')
+const isMailRoute = computed(() => route.path.startsWith('/mail'))
+const isFullView = computed(() => isJoinDoscRoute.value || isPostIndex.value || isMailRoute.value)
+const bodyClass = computed(() => (isPostIndex.value ? 'no-scroll' : ''))
 
 const navItems = [
   { label: '首页', to: '/', match: '/' },
   { label: '星河文库', to: '/post', match: '/post' },
   { label: '线上申请', to: '/joindosc', match: '/joindosc' },
-  { label: '通行证', to: '/mail', match: '/mail' },
-];
+  { label: '通行证', to: '/mail', match: '/mail' }
+]
 
 const activeIndex = computed(() => {
-  const path = route.path;
-  if (path === '/') return 0;
-  if (path.startsWith('/post')) return 1;
-  if (path.startsWith('/joindosc')) return 2;
-  if (path.startsWith('/mail')) return 3;
-  return -1;
-});
+  const path = route.path
+  if (path === '/') return 0
+  if (path.startsWith('/post')) return 1
+  if (path.startsWith('/joindosc')) return 2
+  if (path.startsWith('/mail')) return 3
+  return -1
+})
 
-const navRef = ref(null);
-const headerRef = ref(null);
+const navRef = ref(null)
 
-const getRouteOrder = (path) => {
-  if (path === '/') return 1;
-  if (path.startsWith('/post')) return 2;
-  if (path.startsWith('/joindosc')) return 3;
-  if (path.startsWith('/mail')) return 4;
-  return 0;
-};
-
-
-const indicatorLeft = ref(0);
-const indicatorWidth = ref(0);
-const indicatorVisible = ref(false);
+const indicatorLeft = ref(0)
+const indicatorWidth = ref(0)
+const indicatorVisible = ref(false)
 
 // Track hover state for the entire nav
-const isNavHovered = ref(false);
+const isNavHovered = ref(false)
 // Track which item is being hovered (-1 = none)
-const hoveredIndex = ref(-1);
+const hoveredIndex = ref(-1)
 
 // The "target" index the indicator is showing: hover takes priority, then active
 const targetIndex = computed(() => {
-  if (hoveredIndex.value >= 0) return hoveredIndex.value;
-  return activeIndex.value;
-});
+  if (hoveredIndex.value >= 0) return hoveredIndex.value
+  return activeIndex.value
+})
 
 // Whether the indicator is on an active (selected) item or a hover item
-const isOnActive = computed(() => targetIndex.value === activeIndex.value);
+const isOnActive = computed(() => targetIndex.value === activeIndex.value)
 
 function updateIndicator() {
-  const idx = targetIndex.value;
-  const navEl = navRef.value;
+  const idx = targetIndex.value
+  const navEl = navRef.value
   if (idx < 0 || !navEl) {
-    indicatorVisible.value = false;
-    return;
+    indicatorVisible.value = false
+    return
   }
-  const links = navEl.querySelectorAll('a[href]');
-  const itemEl = links[idx];
+  const links = navEl.querySelectorAll('a[href]')
+  const itemEl = links[idx]
   if (!itemEl) {
-    indicatorVisible.value = false;
-    return;
+    indicatorVisible.value = false
+    return
   }
-  indicatorLeft.value = itemEl.offsetLeft;
-  indicatorWidth.value = itemEl.offsetWidth;
-  indicatorVisible.value = true;
+  indicatorLeft.value = itemEl.offsetLeft
+  indicatorWidth.value = itemEl.offsetWidth
+  indicatorVisible.value = true
 }
 
 function onNavItemHover(index) {
-  hoveredIndex.value = index;
-  nextTick(updateIndicator);
+  hoveredIndex.value = index
+  nextTick(updateIndicator)
 }
 
 function onNavItemLeave() {
-  hoveredIndex.value = -1;
-  nextTick(updateIndicator);
+  hoveredIndex.value = -1
+  nextTick(updateIndicator)
 }
 
 function onNavEnter() {
-  isNavHovered.value = true;
-  startIndicatorTracking();
+  isNavHovered.value = true
+  startIndicatorTracking()
 }
 
 function onNavLeave() {
-  isNavHovered.value = false;
-  hoveredIndex.value = -1;
-  startIndicatorTracking();
+  isNavHovered.value = false
+  hoveredIndex.value = -1
+  startIndicatorTracking()
 }
 
-let resizeObserver = null;
-let paddingRafId = null;
+let resizeObserver = null
+let paddingRafId = null
 
 function startIndicatorTracking() {
-  cancelAnimationFrame(paddingRafId);
+  cancelAnimationFrame(paddingRafId)
   const run = () => {
-    updateIndicator();
-    paddingRafId = requestAnimationFrame(run);
-  };
-  paddingRafId = requestAnimationFrame(run);
+    updateIndicator()
+    paddingRafId = requestAnimationFrame(run)
+  }
+  paddingRafId = requestAnimationFrame(run)
 }
 
 function stopIndicatorTracking() {
-  cancelAnimationFrame(paddingRafId);
-  paddingRafId = null;
-  updateIndicator();
+  cancelAnimationFrame(paddingRafId)
+  paddingRafId = null
+  updateIndicator()
 }
 
 function onNavTransitionEnd(e) {
   // Stop rAF loop once the padding transition finishes
   if (e.propertyName === 'padding-left' || e.propertyName === 'padding-right') {
-    stopIndicatorTracking();
+    stopIndicatorTracking()
   }
 }
 
 onMounted(() => {
-  nextTick(updateIndicator);
-  resizeObserver = new ResizeObserver(updateIndicator);
+  nextTick(updateIndicator)
+  resizeObserver = new ResizeObserver(updateIndicator)
   if (navRef.value) {
-    resizeObserver.observe(navRef.value);
-    navRef.value.addEventListener('transitionend', onNavTransitionEnd);
+    resizeObserver.observe(navRef.value)
+    navRef.value.addEventListener('transitionend', onNavTransitionEnd)
   }
-});
+})
 
 onUnmounted(() => {
-  resizeObserver?.disconnect();
-  if (navRef.value) navRef.value.removeEventListener('transitionend', onNavTransitionEnd);
-  stopIndicatorTracking();
-});
+  resizeObserver?.disconnect()
+  if (navRef.value) navRef.value.removeEventListener('transitionend', onNavTransitionEnd)
+  stopIndicatorTracking()
+})
 
 watch(
   route,
   (to, from) => {
-    nextTick(updateIndicator);
-    const toLogin = to.path === '/mail/login';
-    const fromLogin = from.path === '/mail/login';
-    const toMail = to.path.startsWith('/mail');
-    const fromMail = from.path.startsWith('/mail');
+    nextTick(updateIndicator)
+    const toLogin = to.path === '/mail/login'
+    const fromLogin = from.path === '/mail/login'
+    const toMail = to.path.startsWith('/mail')
+    const fromMail = from.path.startsWith('/mail')
     if (toLogin || fromLogin || (toMail && !fromMail) || (!toMail && fromMail)) {
-      needSlide = true;
-      slideFrom = toLogin || toMail ? '100%' : '-100%';
+      needSlide = true
+      slideFrom = toLogin || toMail ? '100%' : '-100%'
     }
   },
-  { flush: 'pre' },
-);
+  { flush: 'pre' }
+)
 
 watch(targetIndex, () => {
-  nextTick(updateIndicator);
-});
+  nextTick(updateIndicator)
+})
 
 useHead({
   title: '星河环球大学 - Galaxy Global University',
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { name: 'description', content: 'Galaxy Global University Official Website' },
+    { name: 'description', content: 'Galaxy Global University Official Website' }
   ],
   link: [
     { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/vivosans.css' },
     { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Regular/result.css' },
     { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Light/result.css' },
-    { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Medium/result.css' },
+    { rel: 'stylesheet', href: 'https://oss1.236668.xyz/fonts/lxgw/LXGWWenKai-Medium/result.css' }
   ],
   script: [
     {
       src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4889390799936204',
       async: true,
       crossorigin: 'anonymous',
-      tagPosition: 'bodyClose',
+      tagPosition: 'bodyClose'
     },
     {
       src: 'https://oss1.236668.xyz/cursor.js',
       defer: true,
-      tagPosition: 'bodyClose',
-    },
+      tagPosition: 'bodyClose'
+    }
   ],
   htmlAttrs: {
-    lang: 'zh',
+    lang: 'zh'
   },
   bodyAttrs: {
-    class: bodyClass,
-  },
-});
+    class: bodyClass
+  }
+})
 </script>
 
 <template>
   <div
     :class="[
       'bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-x-hidden',
-      isFullView ? 'h-screen' : 'min-h-screen',
+      isFullView ? 'h-screen' : 'min-h-screen'
     ]"
   >
     <!-- Global ambient light orbs -->
@@ -218,7 +211,7 @@ useHead({
         class="pointer-events-auto relative flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-white/[0.08] bg-black/60 px-2 py-2 text-sm font-medium text-gray-300 shadow-[0_8px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl md:gap-2 md:px-3 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
         :style="{
           paddingLeft: isNavHovered ? '1.25rem' : undefined,
-          paddingRight: isNavHovered ? '1.25rem' : undefined,
+          paddingRight: isNavHovered ? '1.25rem' : undefined
         }"
         @mouseenter="onNavEnter"
         @mouseleave="onNavLeave"
@@ -231,7 +224,7 @@ useHead({
             width: indicatorWidth + 'px',
             opacity: indicatorVisible ? 1 : 0,
             background: isOnActive ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
-            transform: isOnActive && hoveredIndex === activeIndex ? 'scaleY(1.15)' : 'scaleY(1)',
+            transform: isOnActive && hoveredIndex === activeIndex ? 'scaleY(1.15)' : 'scaleY(1)'
           }"
         />
 
@@ -249,14 +242,19 @@ useHead({
           "
           @mouseenter="onNavItemHover(i)"
           @mouseleave="onNavItemLeave"
-          >{{ item.label }}</NuxtLink
-        >
+        >{{ item.label }}</NuxtLink>
       </nav>
     </header>
 
     <div class="page-transition-wrapper">
-      <Transition @enter="onSlideEnter" :css="false">
-        <NuxtPage :key="route.path" class="page-view glass-page" />
+      <Transition
+        :css="false"
+        @enter="onSlideEnter"
+      >
+        <NuxtPage
+          :key="route.path"
+          class="page-view glass-page"
+        />
       </Transition>
     </div>
 
@@ -269,9 +267,18 @@ useHead({
       <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         <p>&copy; 2026 Galaxy Global University. 保留所有权利.</p>
         <div class="flex gap-4 mt-4 md:mt-0">
-          <a href="#" class="hover:text-gray-300 transition-colors">隐私政策</a>
-          <a href="#" class="hover:text-gray-300 transition-colors">使用条款</a>
-          <a href="#" class="hover:text-gray-300 transition-colors">联系方式</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >隐私政策</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >使用条款</a>
+          <a
+            href="#"
+            class="hover:text-gray-300 transition-colors"
+          >联系方式</a>
         </div>
       </div>
     </footer>

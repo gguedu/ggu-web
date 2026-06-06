@@ -1,17 +1,17 @@
 export default defineNuxtRouteMiddleware((to) => {
   if (!to.path.startsWith('/mail')) {
-    return;
+    return
   }
   if (to.path === '/mail/login') {
-    return;
+    return
   }
 
-  const { token, restoreToken } = useMailState();
+  const { token, restoreToken } = useMailState()
   if (!token.value) {
-    restoreToken();
+    restoreToken()
   }
 
   if (!token.value) {
-    return navigateTo('/mail/login');
+    return navigateTo('/mail/login')
   }
-});
+})

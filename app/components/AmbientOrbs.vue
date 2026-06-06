@@ -1,18 +1,18 @@
 <script setup>
-const mouse = reactive({ x: 0, y: 0 });
+const mouse = reactive({ x: 0, y: 0 })
 
 function onMouseMove(e) {
-  mouse.x = e.clientX / window.innerWidth - 0.5;
-  mouse.y = e.clientY / window.innerHeight - 0.5;
+  mouse.x = e.clientX / window.innerWidth - 0.5
+  mouse.y = e.clientY / window.innerHeight - 0.5
 }
 
 onMounted(() => {
-  window.addEventListener('mousemove', onMouseMove, { passive: true });
-});
+  window.addEventListener('mousemove', onMouseMove, { passive: true })
+})
 
 onUnmounted(() => {
-  window.removeEventListener('mousemove', onMouseMove);
-});
+  window.removeEventListener('mousemove', onMouseMove)
+})
 </script>
 
 <template>

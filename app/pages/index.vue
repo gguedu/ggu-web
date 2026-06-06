@@ -1,14 +1,14 @@
 <script setup>
-import { Motion } from 'motion-v';
+import { Motion } from 'motion-v'
 
-const title = '星河环球大学'.split('');
-const isLoaded = ref(false);
+const title = '星河环球大学'.split('')
+const isLoaded = ref(false)
 
 onMounted(() => {
   requestAnimationFrame(() => {
-    isLoaded.value = true;
-  });
-});
+    isLoaded.value = true
+  })
+})
 </script>
 
 <template>
@@ -21,11 +21,11 @@ onMounted(() => {
         class="absolute inset-0 pointer-events-none"
         :animate="{
           scale: [1, 1.08, 1],
-          opacity: [0.2, 0.3, 0.2],
+          opacity: [0.2, 0.3, 0.2]
         }"
         :transition="{
           duration: 12,
-          repeat: Infinity,
+          repeat: Infinity
         }"
       >
         <div
@@ -63,17 +63,17 @@ onMounted(() => {
             :initial="{
               opacity: 0,
               y: 80,
-              rotateX: -90,
+              rotateX: -90
             }"
             :animate="{
               opacity: 1,
               y: 0,
-              rotateX: 0,
+              rotateX: 0
             }"
             :transition="{
               delay: 0.4 + index * 0.08,
               duration: 0.7,
-              type: 'spring',
+              type: 'spring'
             }"
           >
             {{ char }}

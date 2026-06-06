@@ -9,7 +9,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   initialScale: 1.5,
-  workerSrc: 'https://oss1.236668.xyz/pdf.worker.min.mjs',
+  workerSrc: 'https://oss1.236668.xyz/pdf.worker.min.mjs'
 })
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = props.workerSrc
@@ -44,8 +44,8 @@ async function loadPdf() {
     totalPages.value = pdfDoc.numPages
     pageNum.value = 1
     await renderPage(1)
-  } catch (e: any) {
-    error.value = e.message || 'Failed to load PDF'
+  } catch (e: unknown) {
+    error.value = e instanceof Error ? e.message : 'Failed to load PDF'
   } finally {
     loading.value = false
   }
@@ -80,7 +80,10 @@ watch(() => props.src, loadPdf)
 </script>
 
 <template>
-  <div ref="containerRef" class="pdf-viewer">
+  <div
+    ref="containerRef"
+    class="pdf-viewer"
+  >
     <!-- 工具栏 -->
     <div class="flex items-center justify-between gap-3 border-b border-(--ui-border) px-4 py-2">
       <div class="flex items-center gap-2">
@@ -100,7 +103,7 @@ watch(() => props.src, loadPdf)
             :max="totalPages"
             class="w-10 rounded border border-(--ui-border) bg-transparent px-1 text-center text-sm"
             @change="goToPage(pageNum)"
-          />
+          >
           / {{ totalPages }}
         </span>
         <UButton
@@ -142,12 +145,24 @@ watch(() => props.src, loadPdf)
 
     <!-- 渲染区域 -->
     <div class="overflow-auto bg-gray-50 dark:bg-gray-900">
-      <div v-if="loading" class="flex items-center justify-center py-20">
-        <UIcon name="i-lucide-loader-2" class="size-8 animate-spin text-(--ui-text-muted)" />
+      <div
+        v-if="loading"
+        class="flex items-center justify-center py-20"
+      >
+        <UIcon
+          name="i-lucide-loader-2"
+          class="size-8 animate-spin text-(--ui-text-muted)"
+        />
       </div>
 
-      <div v-else-if="error" class="flex flex-col items-center justify-center gap-2 py-20 text-(--ui-text-muted)">
-        <UIcon name="i-lucide-file-warning" class="size-8" />
+      <div
+        v-else-if="error"
+        class="flex flex-col items-center justify-center gap-2 py-20 text-(--ui-text-muted)"
+      >
+        <UIcon
+          name="i-lucide-file-warning"
+          class="size-8"
+        />
         <span class="text-sm">{{ error }}</span>
       </div>
 

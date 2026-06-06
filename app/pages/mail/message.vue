@@ -1,69 +1,69 @@
 <script setup lang="ts">
-import DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify'
 
-const router = useRouter();
-const { selectedEmail } = useMailState();
-const mailService = useMailService();
-const toast = useToast();
+const router = useRouter()
+const { selectedEmail } = useMailState()
+const mailService = useMailService()
+const toast = useToast()
 
 const sanitizedContent = computed(() => {
-  if (!email.value?.content) return '';
+  if (!email.value?.content) return ''
   return DOMPurify.sanitize(email.value.content, {
     ADD_TAGS: ['img'],
-    ADD_ATTR: ['target', 'loading'],
-  });
-});
+    ADD_ATTR: ['target', 'loading']
+  })
+})
 
-const email = computed(() => selectedEmail.value);
+const email = computed(() => selectedEmail.value)
 
 const parseRecipient = (value?: string) => {
-  if (!value) return '-';
+  if (!value) return '-'
   try {
-    const list = JSON.parse(value);
+    const list = JSON.parse(value)
     if (Array.isArray(list)) {
       return list
-        .map((item) => item.address || item.email || '')
+        .map(item => item.address || item.email || '')
         .filter(Boolean)
-        .join(', ');
+        .join(', ')
     }
   } catch {
-    return value;
+    return value
   }
-  return '-';
-};
+  return '-'
+}
 
 const toggleStar = async () => {
-  if (!email.value) return;
-  const next = email.value.isStar ? 0 : 1;
-  email.value.isStar = next;
+  if (!email.value) return
+  const next = email.value.isStar ? 0 : 1
+  email.value.isStar = next
   try {
     if (next) {
-      await mailService.starAdd(email.value.emailId);
+      await mailService.starAdd(email.value.emailId)
     } else {
-      await mailService.starCancel(email.value.emailId);
+      await mailService.starCancel(email.value.emailId)
     }
   } catch (error) {
-    console.error(error);
-    email.value.isStar = next ? 0 : 1;
+    console.error(error)
+    email.value.isStar = next ? 0 : 1
   }
-};
+}
 
 const removeEmail = async () => {
-  if (!email.value) return;
+  if (!email.value) return
   try {
-    await mailService.emailDelete(email.value.emailId);
-    toast.add({ title: '邮件已删除', color: 'success' });
-    router.back();
+    await mailService.emailDelete(email.value.emailId)
+    toast.add({ title: '邮件已删除', color: 'success' })
+    router.back()
   } catch (error) {
-    console.error(error);
-    toast.add({ title: '删除失败', color: 'error' });
+    console.error(error)
+    toast.add({ title: '删除失败', color: 'error' })
   }
-};
+}
 
 const goReply = () => {
-  if (!email.value) return;
-  navigateTo(`/mail/compose?replyTo=${email.value.emailId}`);
-};
+  if (!email.value) return
+  navigateTo(`/mail/compose?replyTo=${email.value.emailId}`)
+}
 </script>
 
 <template>
@@ -76,7 +76,10 @@ const goReply = () => {
         class="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors"
         @click="router.back()"
       >
-        <Icon name="lucide:arrow-left" size="16" />
+        <Icon
+          name="lucide:arrow-left"
+          size="16"
+        />
         <span>返回</span>
       </button>
       <div class="flex items-center gap-1">
@@ -85,19 +88,28 @@ const goReply = () => {
           :class="email?.isStar ? 'text-yellow-400' : 'text-gray-400 hover:text-gray-200'"
           @click="toggleStar"
         >
-          <Icon :name="email?.isStar ? 'lucide:star' : 'lucide:star-off'" size="16" />
+          <Icon
+            :name="email?.isStar ? 'lucide:star' : 'lucide:star-off'"
+            size="16"
+          />
         </button>
         <button
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-gray-200 transition-colors"
           @click="goReply"
         >
-          <Icon name="lucide:reply" size="16" />
+          <Icon
+            name="lucide:reply"
+            size="16"
+          />
         </button>
         <button
           class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-red-400 transition-colors"
           @click="removeEmail"
         >
-          <Icon name="lucide:trash-2" size="16" />
+          <Icon
+            name="lucide:trash-2"
+            size="16"
+          />
         </button>
       </div>
     </div>
@@ -108,8 +120,14 @@ const goReply = () => {
         v-if="!email"
         class="flex flex-col items-center justify-center h-full text-gray-500 py-20"
       >
-        <Icon name="lucide:mail" size="48" class="mb-4 opacity-20" />
-        <p class="text-sm">没有可查看的邮件，请返回列表重新选择</p>
+        <Icon
+          name="lucide:mail"
+          size="48"
+          class="mb-4 opacity-20"
+        />
+        <p class="text-sm">
+          没有可查看的邮件，请返回列表重新选择
+        </p>
       </div>
 
       <template v-else>
@@ -142,8 +160,15 @@ const goReply = () => {
 
           <!-- Body -->
           <div class="text-sm text-gray-300 leading-relaxed">
-            <div v-if="email.content" class="prose prose-invert max-w-none" v-html="sanitizedContent" />
-            <pre v-else class="whitespace-pre-wrap font-sans">{{ email.text || '(空内容)' }}</pre>
+            <div
+              v-if="email.content"
+              class="prose prose-invert max-w-none"
+              v-html="sanitizedContent"
+            />
+            <pre
+              v-else
+              class="whitespace-pre-wrap font-sans"
+            >{{ email.text || '(空内容)' }}</pre>
           </div>
 
           <!-- Attachments -->
@@ -152,7 +177,10 @@ const goReply = () => {
             class="mt-6 pt-5 border-t border-white/[0.06]"
           >
             <div class="text-xs font-medium text-gray-400 mb-3 flex items-center gap-1.5">
-              <Icon name="lucide:paperclip" size="12" />
+              <Icon
+                name="lucide:paperclip"
+                size="12"
+              />
               附件 ({{ email.attList.length }})
             </div>
             <div class="space-y-1.5">
@@ -162,7 +190,11 @@ const goReply = () => {
                 class="flex items-center justify-between rounded-md bg-white/[0.04] px-3 py-2"
               >
                 <div class="flex items-center gap-2 min-w-0">
-                  <Icon name="lucide:file" size="14" class="text-gray-500 shrink-0" />
+                  <Icon
+                    name="lucide:file"
+                    size="14"
+                    class="text-gray-500 shrink-0"
+                  />
                   <span class="text-sm text-gray-300 truncate">{{ att.filename }}</span>
                 </div>
                 <a
@@ -184,7 +216,10 @@ const goReply = () => {
             class="flex items-center gap-2 px-4 py-2.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] text-sm text-gray-300 hover:text-gray-100 transition-colors w-full"
             @click="goReply"
           >
-            <Icon name="lucide:reply" size="16" />
+            <Icon
+              name="lucide:reply"
+              size="16"
+            />
             <span>回复此邮件</span>
           </button>
         </div>

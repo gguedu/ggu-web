@@ -1,158 +1,158 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false,
-});
+  layout: false
+})
 
-const router = useRouter();
-const mailService = useMailService();
-const { token, user, config, accounts, currentAccountId, clearSession } = useMailState();
+const router = useRouter()
+const mailService = useMailService()
+const { token, user, config, accounts, currentAccountId, clearSession } = useMailState()
 
-const mode = ref<'login' | 'register'>('login');
-const emailPrefix = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const inviteCode = ref('');
-const suffix = ref('');
-const loading = ref(false);
-const errorMsg = ref('');
-const showPassword = ref(false);
-const showConfirmPassword = ref(false);
+const mode = ref<'login' | 'register'>('login')
+const emailPrefix = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const inviteCode = ref('')
+const suffix = ref('')
+const loading = ref(false)
+const errorMsg = ref('')
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 const allowRegister = computed(() => {
-  const value = config.value.register;
+  const value = config.value.register
   if (value === undefined || value === null) {
-    return true;
+    return true
   }
-  return Number(value) === 0;
-});
+  return Number(value) === 0
+})
 
 const showLoginDomain = computed(() => {
-  const value = config.value.loginDomain;
+  const value = config.value.loginDomain
   if (value === undefined || value === null) {
-    return true;
+    return true
   }
-  return Number(value) === 0;
-});
+  return Number(value) === 0
+})
 
-const regKeyMode = computed(() => Number(config.value.regKey ?? 1));
-const requireInviteCode = computed(() => regKeyMode.value === 0);
-const optionalInviteCode = computed(() => regKeyMode.value === 2);
-const minEmailPrefix = computed(() => Number(config.value.minEmailPrefix ?? 1));
+const regKeyMode = computed(() => Number(config.value.regKey ?? 1))
+const requireInviteCode = computed(() => regKeyMode.value === 0)
+const optionalInviteCode = computed(() => regKeyMode.value === 2)
+const minEmailPrefix = computed(() => Number(config.value.minEmailPrefix ?? 1))
 
 const fullEmail = computed(() => {
-  const prefix = emailPrefix.value.trim();
+  const prefix = emailPrefix.value.trim()
   if (!prefix) {
-    return '';
+    return ''
   }
   if (prefix.includes('@')) {
-    return prefix;
+    return prefix
   }
   if (!showLoginDomain.value) {
-    return prefix;
+    return prefix
   }
-  return `${prefix}${suffix.value || ''}`;
-});
+  return `${prefix}${suffix.value || ''}`
+})
 
-const domainList = computed(() => config.value.domainList || []);
+const domainList = computed(() => config.value.domainList || [])
 
 const bootstrap = async () => {
-  config.value = await mailService.websiteConfig();
+  config.value = await mailService.websiteConfig()
   if (domainList.value.length > 0 && !suffix.value) {
-    suffix.value = domainList.value[0] || '';
+    suffix.value = domainList.value[0] || ''
   }
-};
+}
 
 const completeSession = async (sessionToken: string) => {
-  token.value = sessionToken;
+  token.value = sessionToken
   try {
-    const profile = await mailService.loginUserInfo();
-    user.value = profile;
-    const accountList = await mailService.accountList(0, 100);
-    accounts.value = accountList;
-    currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null;
-    await router.push('/mail');
+    const profile = await mailService.loginUserInfo()
+    user.value = profile
+    const accountList = await mailService.accountList(0, 100)
+    accounts.value = accountList
+    currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null
+    await router.push('/mail')
   } catch {
-    clearSession();
-    throw new Error('登录成功但加载用户信息失败，请重新登录');
+    clearSession()
+    throw new Error('登录成功但加载用户信息失败，请重新登录')
   }
-};
+}
 
 const submit = async () => {
-  errorMsg.value = '';
+  errorMsg.value = ''
   if (!fullEmail.value) {
-    errorMsg.value = '请输入邮箱';
-    return;
+    errorMsg.value = '请输入邮箱'
+    return
   }
   if (emailPrefix.value.trim().length < minEmailPrefix.value) {
-    errorMsg.value = `邮箱至少 ${minEmailPrefix.value} 位`;
-    return;
+    errorMsg.value = `邮箱至少 ${minEmailPrefix.value} 位`
+    return
   }
   if (!password.value) {
-    errorMsg.value = '请输入密码';
-    return;
+    errorMsg.value = '请输入密码'
+    return
   }
 
-  loading.value = true;
+  loading.value = true
   try {
     if (mode.value === 'login') {
-      const res = await mailService.login(fullEmail.value, password.value);
-      await completeSession(res.token);
+      const res = await mailService.login(fullEmail.value, password.value)
+      await completeSession(res.token)
     } else {
       if (!allowRegister.value) {
-        throw new Error('当前站点未开放注册');
+        throw new Error('当前站点未开放注册')
       }
       if (password.value.length < 6) {
-        throw new Error('密码长度至少 6 位');
+        throw new Error('密码长度至少 6 位')
       }
       if (password.value !== confirmPassword.value) {
-        throw new Error('两次输入密码不一致');
+        throw new Error('两次输入密码不一致')
       }
       if (requireInviteCode.value && !inviteCode.value.trim()) {
-        throw new Error('当前注册需要邀请码');
+        throw new Error('当前注册需要邀请码')
       }
       const res = await mailService.register({
         email: fullEmail.value,
         password: password.value,
-        code: inviteCode.value || undefined,
-      });
-      await completeSession(res.token);
+        code: inviteCode.value || undefined
+      })
+      await completeSession(res.token)
     }
-  } catch (error: any) {
-    errorMsg.value = error?.message || '登录失败，请检查配置与网络';
+  } catch (error: unknown) {
+    errorMsg.value = error instanceof Error ? error.message : '登录失败，请检查配置与网络'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 onMounted(() => {
   const init = async () => {
     if (token.value) {
       try {
-        const profile = await mailService.loginUserInfo();
-        user.value = profile;
-        const accountList = await mailService.accountList(0, 100);
-        accounts.value = accountList;
-        currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null;
-        await router.replace('/mail');
-        return;
+        const profile = await mailService.loginUserInfo()
+        user.value = profile
+        const accountList = await mailService.accountList(0, 100)
+        accounts.value = accountList
+        currentAccountId.value = profile.account?.accountId || accountList[0]?.accountId || null
+        await router.replace('/mail')
+        return
       } catch {
-        clearSession();
+        clearSession()
       }
     }
-    await bootstrap();
-  };
-  init();
-});
+    await bootstrap()
+  }
+  init()
+})
 
 watch(allowRegister, (enabled) => {
   if (!enabled && mode.value === 'register') {
-    mode.value = 'login';
+    mode.value = 'login'
   }
-});
+})
 
 watch(mode, () => {
-  errorMsg.value = '';
-});
+  errorMsg.value = ''
+})
 </script>
 
 <template>
@@ -199,7 +199,11 @@ watch(mode, () => {
             Galaxy Global University
           </p>
           <div class="flex items-center gap-4 mb-2">
-            <Icon name="lucide:mail" size="36" class="text-white/70" />
+            <Icon
+              name="lucide:mail"
+              size="36"
+              class="text-white/70"
+            />
             <h1
               class="font-custom text-5xl leading-[1.15] tracking-[0.08em] text-white"
               style="text-shadow: 0 4px 50px rgba(255, 255, 255, 0.15)"
@@ -214,11 +218,19 @@ watch(mode, () => {
 
         <div class="relative z-10 space-y-3">
           <div class="flex items-center gap-3 text-gray-500">
-            <Icon name="lucide:users" size="16" class="text-gray-600" />
+            <Icon
+              name="lucide:users"
+              size="16"
+              class="text-gray-600"
+            />
             <span class="text-sm tracking-wide">多账户统一管理</span>
           </div>
           <div class="flex items-center gap-3 text-gray-500">
-            <Icon name="lucide:paperclip" size="16" class="text-gray-600" />
+            <Icon
+              name="lucide:paperclip"
+              size="16"
+              class="text-gray-600"
+            />
             <span class="text-sm tracking-wide">附件上传与发送</span>
           </div>
         </div>
@@ -240,7 +252,10 @@ watch(mode, () => {
             to="/"
             class="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-300 flex items-center gap-1.5"
           >
-            <Icon name="lucide:arrow-left" size="12" />
+            <Icon
+              name="lucide:arrow-left"
+              size="12"
+            />
             <span>返回主站</span>
           </NuxtLink>
         </div>
@@ -274,7 +289,10 @@ watch(mode, () => {
         </div>
 
         <!-- Form -->
-        <form class="space-y-5" @submit.prevent="submit">
+        <form
+          class="space-y-5"
+          @submit.prevent="submit"
+        >
           <!-- Email -->
           <div>
             <label class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-[0.18em]">
@@ -283,7 +301,11 @@ watch(mode, () => {
             <div class="flex gap-2">
               <div class="flex-1 relative">
                 <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <Icon name="lucide:mail" size="16" class="text-gray-600" />
+                  <Icon
+                    name="lucide:mail"
+                    size="16"
+                    class="text-gray-600"
+                  />
                 </div>
                 <input
                   v-model="emailPrefix"
@@ -294,7 +316,7 @@ watch(mode, () => {
                   style="border: 1px solid #4b5563"
                   @focus="($event.target as HTMLInputElement).style.borderColor = '#ffffff'"
                   @blur="($event.target as HTMLInputElement).style.borderColor = '#4b5563'"
-                />
+                >
               </div>
               <select
                 v-if="showLoginDomain && domainList.length > 0"
@@ -304,7 +326,11 @@ watch(mode, () => {
                 @focus="($event.target as HTMLSelectElement).style.borderColor = '#ffffff'"
                 @blur="($event.target as HTMLSelectElement).style.borderColor = '#4b5563'"
               >
-                <option v-for="item in domainList" :key="item" :value="item">
+                <option
+                  v-for="item in domainList"
+                  :key="item"
+                  :value="item"
+                >
                   {{ item }}
                 </option>
               </select>
@@ -318,7 +344,11 @@ watch(mode, () => {
             </label>
             <div class="relative">
               <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Icon name="lucide:key-round" size="16" class="text-gray-600" />
+                <Icon
+                  name="lucide:key-round"
+                  size="16"
+                  class="text-gray-600"
+                />
               </div>
               <input
                 v-model="password"
@@ -329,13 +359,16 @@ watch(mode, () => {
                 style="border: 1px solid #4b5563"
                 @focus="($event.target as HTMLInputElement).style.borderColor = '#ffffff'"
                 @blur="($event.target as HTMLInputElement).style.borderColor = '#4b5563'"
-              />
+              >
               <button
                 type="button"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors duration-300"
                 @click="showPassword = !showPassword"
               >
-                <Icon :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'" size="16" />
+                <Icon
+                  :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'"
+                  size="16"
+                />
               </button>
             </div>
           </div>
@@ -347,7 +380,11 @@ watch(mode, () => {
             </label>
             <div class="relative">
               <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Icon name="lucide:key-round" size="16" class="text-gray-600" />
+                <Icon
+                  name="lucide:key-round"
+                  size="16"
+                  class="text-gray-600"
+                />
               </div>
               <input
                 v-model="confirmPassword"
@@ -358,13 +395,16 @@ watch(mode, () => {
                 style="border: 1px solid #4b5563"
                 @focus="($event.target as HTMLInputElement).style.borderColor = '#ffffff'"
                 @blur="($event.target as HTMLInputElement).style.borderColor = '#4b5563'"
-              />
+              >
               <button
                 type="button"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400 transition-colors duration-300"
                 @click="showConfirmPassword = !showConfirmPassword"
               >
-                <Icon :name="showConfirmPassword ? 'lucide:eye-off' : 'lucide:eye'" size="16" />
+                <Icon
+                  :name="showConfirmPassword ? 'lucide:eye-off' : 'lucide:eye'"
+                  size="16"
+                />
               </button>
             </div>
           </div>
@@ -376,7 +416,11 @@ watch(mode, () => {
             </label>
             <div class="relative">
               <div class="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Icon name="lucide:ticket" size="16" class="text-gray-600" />
+                <Icon
+                  name="lucide:ticket"
+                  size="16"
+                  class="text-gray-600"
+                />
               </div>
               <input
                 v-model="inviteCode"
@@ -386,7 +430,7 @@ watch(mode, () => {
                 style="border: 1px solid #4b5563"
                 @focus="($event.target as HTMLInputElement).style.borderColor = '#ffffff'"
                 @blur="($event.target as HTMLInputElement).style.borderColor = '#4b5563'"
-              />
+              >
             </div>
           </div>
 
@@ -404,7 +448,11 @@ watch(mode, () => {
               class="flex items-start gap-2.5 p-3 rounded-lg"
               style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25)"
             >
-              <Icon name="lucide:alert-circle" size="16" class="text-red-400 shrink-0 mt-0.5" />
+              <Icon
+                name="lucide:alert-circle"
+                size="16"
+                class="text-red-400 shrink-0 mt-0.5"
+              />
               <span class="text-sm text-red-300">{{ errorMsg }}</span>
             </div>
           </transition>
@@ -415,8 +463,15 @@ watch(mode, () => {
             :disabled="loading"
             class="w-full px-6 py-3.5 bg-white text-black border border-white rounded-md font-bold text-sm tracking-[0.1em] transition-all duration-300 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="loading" class="flex items-center justify-center gap-2">
-              <Icon name="lucide:loader-2" size="16" class="animate-spin" />
+            <span
+              v-if="loading"
+              class="flex items-center justify-center gap-2"
+            >
+              <Icon
+                name="lucide:loader-2"
+                size="16"
+                class="animate-spin"
+              />
               处理中...
             </span>
             <span v-else>{{ mode === 'login' ? '登录' : '注册并登录' }}</span>

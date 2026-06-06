@@ -1,3 +1,3 @@
 <script setup>
-await navigateTo('/mail');
+await navigateTo('/mail')
 </script>
