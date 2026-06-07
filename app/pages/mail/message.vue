@@ -214,6 +214,7 @@ const safeUrl = (url?: string) => {
                   :href="safeUrl(att.key)"
                   target="_blank"
                   rel="noopener noreferrer"
+                  download
                 >
                   下载
                 </a>

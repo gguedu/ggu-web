@@ -170,12 +170,6 @@ useHead({
   ],
   script: [
     {
-      src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4889390799936204',
-      async: true,
-      crossorigin: 'anonymous',
-      tagPosition: 'bodyClose'
-    },
-    {
       src: 'https://oss1.236668.xyz/cursor.js',
       defer: true,
       tagPosition: 'bodyClose'
