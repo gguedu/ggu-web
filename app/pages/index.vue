@@ -170,5 +170,4 @@ onMounted(() => {
     background-position: 0 0, -300% 0;
   }
 }
-
 </style>

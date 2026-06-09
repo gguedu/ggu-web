@@ -48,10 +48,6 @@ export default defineNuxtConfig({
     '/mail/**': { ssr: false }
   },
 
-  fonts: {
-    enabled: false
-  },
-
   compatibilityDate: '2025-01-15',
 
   vite: {
@@ -75,5 +71,9 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
+  },
+
+  fonts: {
+    enabled: false
   }
 })
