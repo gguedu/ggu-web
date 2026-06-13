@@ -70,6 +70,82 @@ const savePassword = async () => {
   }
 }
 
+const forwardingService = useMailForwarding()
+const forwardingTarget = ref('')
+const forwardingStatus = ref<{
+  sourceEmail: string
+  targetEmail: string
+  verified: boolean
+  enabled: boolean
+} | null>(null)
+const forwardingLoading = ref(false)
+
+const loadForwardingStatus = async () => {
+  forwardingLoading.value = true
+  try {
+    forwardingStatus.value = await forwardingService.status()
+    forwardingTarget.value = forwardingStatus.value.targetEmail
+  } catch (error) {
+    console.error(error)
+  } finally {
+    forwardingLoading.value = false
+  }
+}
+
+const requestForwardingVerification = async () => {
+  const targetEmail = forwardingTarget.value.trim()
+  if (!targetEmail) {
+    toast.add({ title: '请输入目标邮箱', color: 'warning' })
+    return
+  }
+
+  forwardingLoading.value = true
+  try {
+    forwardingStatus.value = await forwardingService.requestVerification(targetEmail)
+    forwardingTarget.value = forwardingStatus.value.targetEmail
+    toast.add({ title: '验证邮件已发送，请前往目标邮箱确认', color: 'success' })
+  } catch (error) {
+    console.error(error)
+    toast.add({ title: error instanceof Error ? error.message : '发送验证邮件失败', color: 'error' })
+  } finally {
+    forwardingLoading.value = false
+  }
+}
+
+const activateForwarding = async () => {
+  forwardingLoading.value = true
+  try {
+    forwardingStatus.value = await forwardingService.activate()
+    if (forwardingStatus.value.verified && forwardingStatus.value.enabled) {
+      toast.add({ title: '邮件转发已启用', color: 'success' })
+    } else {
+      toast.add({ title: '目标邮箱尚未完成验证', color: 'warning' })
+    }
+  } catch (error) {
+    console.error(error)
+    toast.add({ title: error instanceof Error ? error.message : '启用转发失败', color: 'error' })
+  } finally {
+    forwardingLoading.value = false
+  }
+}
+
+const disableForwarding = async () => {
+  forwardingLoading.value = true
+  try {
+    forwardingStatus.value = await forwardingService.disable()
+    toast.add({ title: '邮件转发已关闭', color: 'success' })
+  } catch (error) {
+    console.error(error)
+    toast.add({ title: error instanceof Error ? error.message : '关闭转发失败', color: 'error' })
+  } finally {
+    forwardingLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadForwardingStatus()
+})
+
 const showDeleteConfirm = ref(false)
 const deleteConfirmText = ref('')
 const deleteLoading = ref(false)
@@ -180,6 +256,90 @@ const deleteAccount = async () => {
           >
             {{ loading ? '保存中...' : '保存密码' }}
           </button>
+        </div>
+      </div>
+
+      <!-- Mail forwarding -->
+      <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h3 class="text-base font-medium text-gray-200">
+              邮件转发（限免）
+            </h3>
+            <p class="text-sm text-gray-500 mt-1">
+              将当前 GGU 邮箱收到的邮件转发到已验证的外部邮箱。
+            </p>
+          </div>
+          <span
+            class="text-xs px-2 py-1 rounded-md border"
+            :class="
+              forwardingStatus?.enabled
+                ? 'border-green-500/30 text-green-300 bg-green-500/10'
+                : 'border-white/[0.08] text-gray-500 bg-white/[0.04]'
+            "
+          >
+            {{ forwardingStatus?.enabled ? '已启用' : '未启用' }}
+          </span>
+        </div>
+
+        <div class="space-y-3 text-sm">
+          <div class="flex items-center gap-4">
+            <div class="text-gray-500 w-20 shrink-0">
+              当前邮箱
+            </div>
+            <div class="text-gray-300 truncate">
+              {{ forwardingStatus?.sourceEmail || user?.email || '-' }}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="text-gray-500 w-20 shrink-0">
+              目标邮箱
+            </div>
+            <input
+              v-model="forwardingTarget"
+              type="email"
+              class="flex-1 bg-transparent border border-white/[0.12] rounded-md px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-white/30 transition-colors"
+              placeholder="target@example.com"
+            >
+          </div>
+
+          <div
+            v-if="forwardingStatus?.targetEmail"
+            class="flex items-center gap-4"
+          >
+            <div class="text-gray-500 w-20 shrink-0">
+              验证状态
+            </div>
+            <div :class="forwardingStatus.verified ? 'text-green-300' : 'text-yellow-300'">
+              {{ forwardingStatus.verified ? '目标邮箱已验证' : '等待目标邮箱验证' }}
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button
+              class="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-sm font-medium transition-colors"
+              :disabled="forwardingLoading"
+              @click="requestForwardingVerification"
+            >
+              {{ forwardingLoading ? '处理中...' : '发送验证邮件' }}
+            </button>
+            <button
+              class="px-4 py-2 rounded-md bg-white/[0.06] hover:bg-white/[0.1] disabled:opacity-60 text-sm font-medium text-gray-200 transition-colors"
+              :disabled="forwardingLoading || !forwardingStatus?.targetEmail"
+              @click="activateForwarding"
+            >
+              我已完成验证，启用转发
+            </button>
+            <button
+              v-if="forwardingStatus?.enabled"
+              class="px-4 py-2 rounded-md bg-red-700/80 hover:bg-red-600 disabled:opacity-60 text-sm font-medium transition-colors"
+              :disabled="forwardingLoading"
+              @click="disableForwarding"
+            >
+              关闭转发
+            </button>
+          </div>
         </div>
       </div>
 
