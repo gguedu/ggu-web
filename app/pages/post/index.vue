@@ -114,7 +114,7 @@ watch(page, () => {
             星河文库
           </h1>
           <p class="max-w-2xl text-base leading-relaxed text-[#9ca3af]">
-            汇集校园新闻、学术活动与研究速递。每一篇文章都由构建引擎自动整理，确保干净、快速、无噪声的阅读体验。
+            汇集校园新闻、学术活动与研究速递。提供干净、快速、无噪声的阅读体验。
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-3 text-xs text-[#6b7280]">

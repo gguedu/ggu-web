@@ -208,11 +208,11 @@ watch(mode, () => {
               class="font-custom text-5xl leading-[1.15] tracking-[0.08em] text-white"
               style="text-shadow: 0 4px 50px rgba(255, 255, 255, 0.15)"
             >
-              星河邮箱
+              星河通行证
             </h1>
           </div>
           <p class="mt-6 text-lg leading-[1.6] text-gray-400 max-w-sm">
-            统一身份账号登录，访问教学通知、校内协同与事务邮件。
+            统一身份账号登录，访问通知、校内协同与事务邮件。
           </p>
         </div>
 
@@ -223,7 +223,7 @@ watch(mode, () => {
               size="16"
               class="text-gray-600"
             />
-            <span class="text-sm tracking-wide">多账户统一管理</span>
+            <span class="text-sm tracking-wide">多服务统一认证</span>
           </div>
           <div class="flex items-center gap-3 text-gray-500">
             <Icon
