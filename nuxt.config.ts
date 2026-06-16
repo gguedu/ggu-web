@@ -19,6 +19,10 @@ const normalizeUnderscoreEmphasis = (value: string) => {
 export default defineNuxtConfig({
   modules: ['@nuxt/eslint', '@nuxt/ui', '@nuxt/content'],
 
+  ui: {
+    fonts: false
+  },
+
   devtools: {
     enabled: true
   },
@@ -72,9 +76,5 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
-  },
-
-  fonts: {
-    enabled: false
   }
 })
