@@ -18,7 +18,11 @@ function onSlideEnter(el, done) {
 const isJoinDoscRoute = computed(() => route.path === '/joindosc')
 const isPostIndex = computed(() => route.path === '/post')
 const isMailRoute = computed(() => route.path.startsWith('/mail'))
-const isFullView = computed(() => isJoinDoscRoute.value || isPostIndex.value || isMailRoute.value)
+const isServicesRoute = computed(() => route.path.startsWith('/services'))
+const isServicesDnsRoute = computed(() => route.path === '/services/dns')
+const isFullView = computed(
+  () => isJoinDoscRoute.value || isPostIndex.value || isMailRoute.value || isServicesRoute.value
+)
 const bodyClass = computed(() => (isPostIndex.value ? 'no-scroll' : ''))
 
 const navItems = [
@@ -33,7 +37,8 @@ const activeIndex = computed(() => {
   if (path === '/') return 0
   if (path.startsWith('/post')) return 1
   if (path.startsWith('/joindosc')) return 2
-  if (path.startsWith('/mail')) return 3
+  if (path.startsWith('/services')) return 3
+  if (path.startsWith('/mail')) return 4
   return -1
 })
 
@@ -188,7 +193,7 @@ useHead({
   <div
     :class="[
       'bg-black text-white flex flex-col font-sans selection:bg-gray-800 relative overflow-x-hidden',
-      isFullView ? 'h-screen' : 'min-h-screen'
+      isServicesDnsRoute || (isFullView && !isServicesRoute) ? 'h-screen' : 'min-h-screen'
     ]"
   >
     <!-- Global ambient light orbs -->
@@ -196,7 +201,7 @@ useHead({
 
     <!-- Header -->
     <header
-      v-if="!isMailRoute"
+      v-if="!isMailRoute && !isServicesDnsRoute"
       id="global-site-header"
       class="pointer-events-none fixed left-0 right-0 top-5 z-30 flex justify-center px-4"
     >
@@ -293,7 +298,8 @@ body {
 
 .page-transition-wrapper {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   width: 100%;
   flex: 1 1 auto;
   display: flex;
