@@ -43,14 +43,17 @@ export default defineNuxtConfig({
     public: {
       // 留空由运行时环境变量 NUXT_PUBLIC_MAIL_API_BASE_URL 注入
       mailApiBaseUrl: '',
-      mailForwardingApiBaseUrl: ''
+      mailForwardingApiBaseUrl: '',
+      dnsApiBaseUrl: ''
     }
   },
 
   routeRules: {
     '/': { prerender: true },
     '/mail': { ssr: false },
-    '/mail/**': { ssr: false }
+    '/mail/**': { ssr: false },
+    '/services': { ssr: false },
+    '/services/**': { ssr: false }
   },
 
   compatibilityDate: '2025-01-15',
